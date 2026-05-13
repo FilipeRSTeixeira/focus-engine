@@ -69,12 +69,12 @@ export function TimerProfileSelector({
       <div className="relative">
         <button
           onClick={() => setOpen(!open)}
-          aria-label="Escolher perfil de timer"
+          aria-label="Select timer profile"
           aria-expanded={open}
           className="inline-flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent"
         >
           <span className="max-w-[140px] truncate sm:max-w-[200px]">
-            {active ? formatProfile(active) : "Sem perfil"}
+            {active ? formatProfile(active) : "No profile"}
           </span>
           <ChevronDown size={13} className="text-muted-foreground" />
         </button>
@@ -111,8 +111,8 @@ export function TimerProfileSelector({
           onOpenManager?.();
         }}
         className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-        title="Gerir perfis"
-        aria-label="Gerir perfis"
+        title="Manage profiles"
+        aria-label="Manage profiles"
       >
         <Settings size={15} />
       </button>

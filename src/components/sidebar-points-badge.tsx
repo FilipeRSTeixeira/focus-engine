@@ -43,7 +43,7 @@ export function SidebarPointsBadge({ collapsed }: { collapsed: boolean }) {
     return (
       <div
         className="flex flex-col items-center gap-1 py-1 text-[11px] text-muted-foreground"
-        title={`${stats.points} pontos hoje · streak de ${stats.streak} dias`}
+        title={`${stats.points} points today · ${stats.streak}-day streak`}
       >
         <div className="flex items-center gap-1">
           <Star size={11} className="fill-current" style={{ color: "#FFC107" }} />
@@ -62,9 +62,9 @@ export function SidebarPointsBadge({ collapsed }: { collapsed: boolean }) {
   return (
     <div
       className="flex items-center justify-between gap-2 px-1 py-1.5 text-xs"
-      title="Pontos ganhos hoje · streak ativa"
+      title="Points earned today · active streak"
     >
-      <span className="text-muted-foreground">Hoje</span>
+      <span className="text-muted-foreground">Today</span>
       <div className="flex items-center gap-3 font-medium">
         <span className="inline-flex items-center gap-1">
           <Star size={12} className="fill-current" style={{ color: "#FFC107" }} />
