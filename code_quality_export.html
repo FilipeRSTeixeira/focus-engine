@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Focus Engine — Code Quality</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#1a1a1a;padding:32px;max-width:1100px;margin:0 auto}
+h1{font-size:18px;font-weight:600;margin-bottom:4px}
+.sub-title{font-size:12px;color:#888;margin-bottom:28px}
+.section-title{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#aaa;margin-bottom:10px}
+.chart-wrap{position:relative;width:100%;height:230px;margin-bottom:32px}
+.table-wrap{overflow-x:auto;border:1px solid #e8e8e8;border-radius:10px;margin-bottom:32px}
+table{border-collapse:collapse;width:100%;min-width:750px}
+thead th{padding:10px 12px;font-size:10px;font-weight:600;color:#888;background:#f8f8f8;border-bottom:1px solid #e8e8e8;text-align:left;white-space:nowrap}
+thead th.crit{text-align:right;font-size:9px}
+tbody tr{border-bottom:1px solid #f0f0f0}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:10px 12px;font-size:12px;vertical-align:middle}
+td.label{min-width:200px}
+td.score{text-align:right;font-size:12px;font-weight:500}
+td.total{text-align:right;font-size:15px;font-weight:600;white-space:nowrap}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:600;margin-bottom:3px}
+.sol-sub{font-size:9px;color:#aaa;display:block;margin-top:1px}
+.bar-mini{height:3px;border-radius:2px;background:#f0f0f0;margin-top:3px}
+.bar-mini-fill{height:100%;border-radius:2px}
+.c1{color:#1D9E75}.c2{color:#534AB7}.c3{color:#b94a20}.c4{color:#185FA5}.c5{color:#993556}.c6{color:#3B6D11}
+.b1{background:#E1F5EE;color:#1D9E75}.b2{background:#EEEDFE;color:#534AB7}.b3{background:#FAECE7;color:#b94a20}.b4{background:#E6F1FB;color:#185FA5}.b5{background:#FBEAF0;color:#993556}.b6{background:#EAF3DE;color:#3B6D11}
+.f1{background:#5DCAA5}.f2{background:#7F77DD}.f3{background:#F0997B}.f4{background:#85B7EB}.f5{background:#D4537E}.f6{background:#97C459}
+tr.r1 td:first-child{border-left:3px solid #F0997B}
+tr.r2 td:first-child{border-left:3px solid #97C459}
+tr.r3 td:first-child{border-left:3px solid #85B7EB}
+tr.r4 td:first-child{border-left:3px solid #D4537E}
+tr.r5 td:first-child{border-left:3px solid #7F77DD}
+tr.r6 td:first-child{border-left:3px solid #5DCAA5}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:24px}
+.btn:hover{background:#333}
+.footer{font-size:10px;color:#ccc;margin-top:24px;text-align:right}
+</style>
+</head>
+<body>
+<div id="capture">
+  <h1>Focus Engine — Code Quality Analysis</h1>
+  <p class="sub-title">6 solutions · 7 criteria · max 85 points · ordered lowest to highest</p>
+
+  <div class="section-title">Total score (/ 85)</div>
+  <div class="chart-wrap">
+    <canvas id="chart" role="img" aria-label="Bar chart showing total scores from 42 to 66.">42, 44, 48, 53, 55, 66</canvas>
+  </div>
+
+  <div class="section-title">Detail by criterion</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Solution</th>
+          <th class="crit">Arch. & Org.<br>/20</th>
+          <th class="crit">TypeScript<br>/10</th>
+          <th class="crit">Separation<br>/10</th>
+          <th class="crit">Error Handling<br>/15</th>
+          <th class="crit">Security<br>/10</th>
+          <th class="crit">Correctness<br>/15</th>
+          <th class="crit">Async<br>/5</th>
+          <th class="crit">Total<br>/85</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="r1">
+          <td class="label"><span class="badge b3">ClaudeCode + Sonnet4.6</span><span class="sol-sub">all at once · SPA HTML / Vanilla JS</span></td>
+          <td class="score c3">8<div class="bar-mini"><div class="bar-mini-fill f3" style="width:40%"></div></div></td>
+          <td class="score c3">0<div class="bar-mini"><div class="bar-mini-fill f3" style="width:0%"></div></div></td>
+          <td class="score c3">5<div class="bar-mini"><div class="bar-mini-fill f3" style="width:50%"></div></div></td>
+          <td class="score c3">8<div class="bar-mini"><div class="bar-mini-fill f3" style="width:53%"></div></div></td>
+          <td class="score c3">8<div class="bar-mini"><div class="bar-mini-fill f3" style="width:80%"></div></div></td>
+          <td class="score c3">10<div class="bar-mini"><div class="bar-mini-fill f3" style="width:67%"></div></div></td>
+          <td class="score c3">3<div class="bar-mini"><div class="bar-mini-fill f3" style="width:60%"></div></div></td>
+          <td class="total c3">42</td>
+        </tr>
+        <tr class="r2">
+          <td class="label"><span class="badge b6">OpenCode + Qwen3.6 35B A3B Q6_K</span><span class="sol-sub">all at once · focus-engine-q · SPA HTML / Vanilla JS</span></td>
+          <td class="score c6">12<div class="bar-mini"><div class="bar-mini-fill f6" style="width:60%"></div></div></td>
+          <td class="score c6">0<div class="bar-mini"><div class="bar-mini-fill f6" style="width:0%"></div></div></td>
+          <td class="score c6">7<div class="bar-mini"><div class="bar-mini-fill f6" style="width:70%"></div></div></td>
+          <td class="score c6">9<div class="bar-mini"><div class="bar-mini-fill f6" style="width:60%"></div></div></td>
+          <td class="score c6">8<div class="bar-mini"><div class="bar-mini-fill f6" style="width:80%"></div></div></td>
+          <td class="score c6">4<div class="bar-mini"><div class="bar-mini-fill f6" style="width:27%"></div></div></td>
+          <td class="score c6">4<div class="bar-mini"><div class="bar-mini-fill f6" style="width:80%"></div></div></td>
+          <td class="total c6">44</td>
+        </tr>
+        <tr class="r3">
+          <td class="label"><span class="badge b4">OpenCode + Qwen3.6 35B A3B Q6_K</span><span class="sol-sub">all at once · index-w · SPA HTML / Router + Pub/Sub</span></td>
+          <td class="score c4">14<div class="bar-mini"><div class="bar-mini-fill f4" style="width:70%"></div></div></td>
+          <td class="score c4">0<div class="bar-mini"><div class="bar-mini-fill f4" style="width:0%"></div></div></td>
+          <td class="score c4">8<div class="bar-mini"><div class="bar-mini-fill f4" style="width:80%"></div></div></td>
+          <td class="score c4">8<div class="bar-mini"><div class="bar-mini-fill f4" style="width:53%"></div></div></td>
+          <td class="score c4">8<div class="bar-mini"><div class="bar-mini-fill f4" style="width:80%"></div></div></td>
+          <td class="score c4">7<div class="bar-mini"><div class="bar-mini-fill f4" style="width:47%"></div></div></td>
+          <td class="score c4">3<div class="bar-mini"><div class="bar-mini-fill f4" style="width:60%"></div></div></td>
+          <td class="total c4">48</td>
+        </tr>
+        <tr class="r4">
+          <td class="label"><span class="badge b5">QwenCode + Qwen3.6 35B A3B Q6_K</span><span class="sol-sub">step by step · Next.js / API Routes / Prisma</span></td>
+          <td class="score c5">15<div class="bar-mini"><div class="bar-mini-fill f5" style="width:75%"></div></div></td>
+          <td class="score c5">6<div class="bar-mini"><div class="bar-mini-fill f5" style="width:60%"></div></div></td>
+          <td class="score c5">6<div class="bar-mini"><div class="bar-mini-fill f5" style="width:60%"></div></div></td>
+          <td class="score c5">9<div class="bar-mini"><div class="bar-mini-fill f5" style="width:60%"></div></div></td>
+          <td class="score c5">8<div class="bar-mini"><div class="bar-mini-fill f5" style="width:80%"></div></div></td>
+          <td class="score c5">7<div class="bar-mini"><div class="bar-mini-fill f5" style="width:47%"></div></div></td>
+          <td class="score c5">2<div class="bar-mini"><div class="bar-mini-fill f5" style="width:40%"></div></div></td>
+          <td class="total c5">53</td>
+        </tr>
+        <tr class="r5">
+          <td class="label"><span class="badge b2">ClaudeCode + Qwen3.6 35B A3B Q6_K</span><span class="sol-sub">step by step · Next.js / Server Actions / Prisma</span></td>
+          <td class="score c2">15<div class="bar-mini"><div class="bar-mini-fill f2" style="width:75%"></div></div></td>
+          <td class="score c2">6<div class="bar-mini"><div class="bar-mini-fill f2" style="width:60%"></div></div></td>
+          <td class="score c2">7<div class="bar-mini"><div class="bar-mini-fill f2" style="width:70%"></div></div></td>
+          <td class="score c2">8<div class="bar-mini"><div class="bar-mini-fill f2" style="width:53%"></div></div></td>
+          <td class="score c2">7<div class="bar-mini"><div class="bar-mini-fill f2" style="width:70%"></div></div></td>
+          <td class="score c2">8<div class="bar-mini"><div class="bar-mini-fill f2" style="width:53%"></div></div></td>
+          <td class="score c2">4<div class="bar-mini"><div class="bar-mini-fill f2" style="width:80%"></div></div></td>
+          <td class="total c2">55</td>
+        </tr>
+        <tr class="r6">
+          <td class="label"><span class="badge b1">OpenCode + Qwen3.6 35B A3B Q6_K</span><span class="sol-sub">step by step · Next.js / Server Actions / Prisma</span></td>
+          <td class="score c1">17<div class="bar-mini"><div class="bar-mini-fill f1" style="width:85%"></div></div></td>
+          <td class="score c1">7<div class="bar-mini"><div class="bar-mini-fill f1" style="width:70%"></div></div></td>
+          <td class="score c1">8<div class="bar-mini"><div class="bar-mini-fill f1" style="width:80%"></div></div></td>
+          <td class="score c1">9<div class="bar-mini"><div class="bar-mini-fill f1" style="width:60%"></div></div></td>
+          <td class="score c1">8<div class="bar-mini"><div class="bar-mini-fill f1" style="width:80%"></div></div></td>
+          <td class="score c1">12<div class="bar-mini"><div class="bar-mini-fill f1" style="width:80%"></div></div></td>
+          <td class="score c1">5<div class="bar-mini"><div class="bar-mini-fill f1" style="width:100%"></div></div></td>
+          <td class="total c1">66</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="footer">Focus Engine · Code Quality Analysis</div>
+</div>
+
+<button class="btn" onclick="exportPNG()">⬇ Download PNG</button>
+
+<script>
+new Chart(document.getElementById('chart'), {
+  type: 'bar',
+  data: {
+    labels: [
+      'ClaudeCode + Sonnet4.6 (all at once)',
+      'OpenCode + Qwen3.6 · focus-q (all at once)',
+      'OpenCode + Qwen3.6 · index-w (all at once)',
+      'QwenCode + Qwen3.6 (step by step)',
+      'ClaudeCode + Qwen3.6 (step by step)',
+      'OpenCode + Qwen3.6 (step by step)'
+    ],
+    datasets: [{
+      data: [42, 44, 48, 53, 55, 66],
+      backgroundColor: ['#F0997B','#97C459','#85B7EB','#D4537E','#7F77DD','#5DCAA5'],
+      borderRadius: 5,
+      barThickness: 24
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw} / 85 points` } }
+    },
+    scales: {
+      x: {
+        min: 0, max: 85,
+        ticks: { font: { size: 11 }, color: '#aaa', stepSize: 10 },
+        grid: { color: 'rgba(0,0,0,0.06)' },
+        border: { display: false }
+      },
+      y: {
+        ticks: { font: { size: 11 }, color: '#555' },
+        grid: { display: false },
+        border: { display: false }
+      }
+    }
+  }
+});
+
+function exportPNG() {
+  html2canvas(document.getElementById('capture'), {
+    scale: 2,
+    backgroundColor: '#ffffff',
+    useCORS: true
+  }).then(canvas => {
+    const a = document.createElement('a');
+    a.download = 'focus-engine-code-quality.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  });
+}
+</script>
+</body>
+</html>

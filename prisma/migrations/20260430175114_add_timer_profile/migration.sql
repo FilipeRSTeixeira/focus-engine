@@ -1,0 +1,10 @@
+-- CreateTable
+CREATE TABLE "TimerProfile" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "workMinutes" INTEGER NOT NULL DEFAULT 25,
+    "breakMinutes" INTEGER NOT NULL DEFAULT 5,
+    "isActive" BOOLEAN NOT NULL DEFAULT false,
+    "isDefault" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

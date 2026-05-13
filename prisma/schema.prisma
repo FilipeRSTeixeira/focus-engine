@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model DailySummary {
+  id              Int      @id @default(autoincrement())
+  date            DateTime @unique
+  tasks_completed Int      @default(0)
+  points_earned   Int      @default(0)
+  points_spent    Int      @default(0)
+  focus_sessions  Int      @default(0)
+  reflection_note String?
+  streak          Int      @default(0)
+  distractions    String?
+  energy_level    Int?
+}
+
+model FocusSession {
+  id               Int      @id @default(autoincrement())
+  taskId           Int?
+  duration_minutes Int
+  type             String   @default("work")
+  completed        Boolean  @default(false)
+  note             String?
+  focus_lost       Boolean  @default(false)
+  createdAt        DateTime @default(now())
+}
+
+model Project {
+  id        Int      @id @default(autoincrement())
+  name      String
+  color     String   @default("#6366f1")
+  icon      String   @default("folder")
+  createdAt DateTime @default(now())
+  Task      Task[]
+}
+
+model Reward {
+  id              Int       @id @default(autoincrement())
+  title           String
+  point_cost      Int
+  type            String    @default("points")
+  reward_duration String
+  status          String    @default("available")
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  activatedAt     DateTime?
+}
+
+model Task {
+  id                     Int       @id @default(autoincrement())
+  projectId              Int
+  title                  String
+  description            String?
+  priority               String    @default("medium")
+  expected_energy        String    @default("medium")
+  estimated_time_minutes Int?
+  status                 String    @default("pending")
+  is_hard                Boolean   @default(false)
+  dueDate                DateTime?
+  createdAt              DateTime  @default(now())
+  completedAt            DateTime?
+  points_earned          Int?
+  bonus_breakdown        String?
+  google_event_id        String?
+  Project                Project   @relation(fields: [projectId], references: [id])
+}
+
+model Achievement {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  title       String
+  description String
+  icon        String   @default("award")
+  unlockedAt  DateTime @default(now())
+}
+
+model TimerProfile {
+  id           Int      @id @default(autoincrement())
+  name         String
+  workMinutes  Int      @default(25)
+  breakMinutes Int      @default(5)
+  isActive     Boolean  @default(false)
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
