@@ -95,7 +95,7 @@ function toEditForm(task: Task): EditForm {
 function formatDate(iso: string | null | undefined): string {
   if (!iso) return "";
   const d = new Date(iso);
-  return d.toLocaleDateString("pt-PT", {
+  return d.toLocaleDateString("en-US", {
     day: "2-digit",
     month: "short",
   });
@@ -155,8 +155,8 @@ export default function TasksPage() {
     } catch (e) {
       setError(
         e instanceof Error
-          ? `Falha a carregar pontos: ${e.message}`
-          : "Falha a carregar pontos"
+          ? `Failed to load points: ${e.message}`
+          : "Failed to load points"
       );
     }
   }
@@ -176,8 +176,8 @@ export default function TasksPage() {
     } catch (e) {
       setError(
         e instanceof Error
-          ? `Falha a carregar tarefas: ${e.message}`
-          : "Falha a carregar tarefas"
+          ? `Failed to load tasks: ${e.message}`
+          : "Failed to load tasks"
       );
     }
   }
@@ -193,8 +193,8 @@ export default function TasksPage() {
     } catch (e) {
       setError(
         e instanceof Error
-          ? `Falha a carregar projetos: ${e.message}`
-          : "Falha a carregar projetos"
+          ? `Failed to load projects: ${e.message}`
+          : "Failed to load projects"
       );
     }
   }
@@ -233,7 +233,7 @@ export default function TasksPage() {
           dueDate: dueDate || undefined,
         }),
       });
-      if (!res.ok) throw new Error(`Falha a criar tarefa (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to create task (${res.status})`);
       setTitle("");
       setDescription("");
       setEstimatedTime("");
@@ -244,20 +244,20 @@ export default function TasksPage() {
       setShowAdvanced(false);
       await loadTasks();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha a criar tarefa");
+      setError(e instanceof Error ? e.message : "Failed to create task");
     } finally {
       setLoading(false);
     }
   }
 
   async function handleDelete(id: number, title: string) {
-    if (!confirm(`Eliminar "${title}"?`)) return;
+    if (!confirm(`Delete "${title}"?`)) return;
     try {
       const res = await fetch(`/api/tasks/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error(`Falha a eliminar (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to delete (${res.status})`);
       await loadTasks();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha a eliminar tarefa");
+      setError(e instanceof Error ? e.message : "Failed to delete task");
     }
   }
 
@@ -268,10 +268,10 @@ export default function TasksPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
-      if (!res.ok) throw new Error(`Falha a atualizar (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to update (${res.status})`);
       await loadTasks();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha a atualizar estado");
+      setError(e instanceof Error ? e.message : "Failed to update status");
     }
   }
 
@@ -306,11 +306,11 @@ export default function TasksPage() {
           dueDate: editForm.dueDate || null,
         }),
       });
-      if (!res.ok) throw new Error(`Falha a guardar (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to save (${res.status})`);
       cancelEdit();
       await loadTasks();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha a guardar tarefa");
+      setError(e instanceof Error ? e.message : "Failed to save task");
     } finally {
       setSavingEdit(false);
     }
@@ -320,7 +320,7 @@ export default function TasksPage() {
     setCompletedTaskId(id);
     try {
       const res = await fetch(`/api/tasks/${id}/complete`, { method: "POST" });
-      if (!res.ok) throw new Error(`Falha a concluir (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to complete (${res.status})`);
       const result = await res.json();
       if (result) {
         setPointsEarned(result.pointsEarned);
@@ -335,7 +335,7 @@ export default function TasksPage() {
       }
     } catch (e) {
       setCompletedTaskId(null);
-      setError(e instanceof Error ? e.message : "Falha a concluir tarefa");
+      setError(e instanceof Error ? e.message : "Failed to complete task");
     }
   }
 
@@ -344,7 +344,7 @@ export default function TasksPage() {
   const activeProject = projectFilter
     ? projects.find((p) => String(p.id) === projectFilter)
     : null;
-  const heading = activeProject ? activeProject.name : "Tarefas";
+  const heading = activeProject ? activeProject.name : "Tasks";
 
   return (
     <div className="mx-auto max-w-3xl px-6 pt-20 pb-16 sm:px-10 sm:pt-14">
@@ -364,7 +364,7 @@ export default function TasksPage() {
           {activeProject && (
             <p className="mt-1 text-sm text-muted-foreground">
               <Link href="/tasks" className="hover:underline">
-                ← Todas as tarefas
+                ← All tasks
               </Link>
             </p>
           )}
@@ -386,7 +386,7 @@ export default function TasksPage() {
           </span>
           <input
             type="text"
-            placeholder="Nova tarefa…"
+            placeholder="New task…"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="flex-1 min-w-0 bg-transparent px-1 py-2 text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none"
@@ -397,9 +397,9 @@ export default function TasksPage() {
             onChange={(e) => setProjectId(e.target.value)}
             className="rounded-md bg-muted px-2.5 py-2 text-xs text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring/40"
             required
-            title="Projeto"
+            title="Project"
           >
-            <option value="">Projeto…</option>
+            <option value="">Project…</option>
             {projects.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
@@ -417,7 +417,7 @@ export default function TasksPage() {
             ) : (
               <ChevronDown size={14} />
             )}
-            Opções
+            Options
           </button>
           <button
             type="submit"
@@ -425,14 +425,14 @@ export default function TasksPage() {
             className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             <Plus size={13} />
-            Adicionar
+            Add
           </button>
         </div>
 
         {showAdvanced && (
           <div className="mt-3 grid grid-cols-1 gap-2 border-t border-border pt-3 sm:grid-cols-2">
             <textarea
-              placeholder="Descrição (opcional)"
+              placeholder="Description (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
@@ -442,11 +442,11 @@ export default function TasksPage() {
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
               className="rounded-md bg-muted/60 px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
-              title="Prioridade"
+              title="Priority"
             >
               {PRIORITIES.map((p) => (
                 <option key={p} value={p}>
-                  Prioridade {p === "high" ? "alta" : p === "medium" ? "média" : "baixa"}
+                  {p === "high" ? "High" : p === "medium" ? "Medium" : "Low"} priority
                 </option>
               ))}
             </select>
@@ -454,17 +454,17 @@ export default function TasksPage() {
               value={energy}
               onChange={(e) => setEnergy(e.target.value)}
               className="rounded-md bg-muted/60 px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
-              title="Energia esperada"
+              title="Expected energy"
             >
               {ENERGIES.map((en) => (
                 <option key={en} value={en}>
-                  Energia {en === "high" ? "alta" : en === "medium" ? "média" : "baixa"}
+                  {en === "high" ? "High" : en === "medium" ? "Medium" : "Low"} energy
                 </option>
               ))}
             </select>
             <input
               type="number"
-              placeholder="Minutos estimados"
+              placeholder="Estimated minutes"
               value={estimatedTime}
               onChange={(e) => setEstimatedTime(e.target.value)}
               min={1}
@@ -474,7 +474,7 @@ export default function TasksPage() {
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              title="Data limite"
+              title="Due date"
               className="rounded-md bg-muted/60 px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
             />
             <label className="col-span-full inline-flex cursor-pointer items-center gap-2 rounded-md bg-muted/60 px-3 py-2 text-sm text-foreground">
@@ -491,7 +491,7 @@ export default function TasksPage() {
                 }}
               />
               <span>
-                Tarefa difícil <span className="text-muted-foreground">(+30%, máx 2/dia)</span>
+                Hard task <span className="text-muted-foreground">(+30%, max 2/day)</span>
               </span>
             </label>
           </div>
@@ -507,44 +507,44 @@ export default function TasksPage() {
           aria-expanded={showFilters}
         >
           <SlidersHorizontal size={12} />
-          Filtros
+          Filters
         </button>
         {showFilters && (
           <>
             <FilterSelect
               value={filterStatus}
               onChange={setFilterStatus}
-              placeholder="Todos os estados"
+              placeholder="All statuses"
               options={STATUSES.map((s) => ({
                 value: s,
                 label:
                   s === "pending"
-                    ? "Pendentes"
+                    ? "Pending"
                     : s === "active"
-                    ? "Ativas"
-                    : "Concluídas",
+                    ? "Active"
+                    : "Completed",
               }))}
             />
             <FilterSelect
               value={filterPriority}
               onChange={setFilterPriority}
-              placeholder="Todas as prioridades"
+              placeholder="All priorities"
               options={PRIORITIES.map((p) => ({
                 value: p,
-                label: `Prioridade ${
-                  p === "high" ? "alta" : p === "medium" ? "média" : "baixa"
-                }`,
+                label: `${
+                  p === "high" ? "High" : p === "medium" ? "Medium" : "Low"
+                } priority`,
               }))}
             />
             <FilterSelect
               value={filterEnergy}
               onChange={setFilterEnergy}
-              placeholder="Toda a energia"
+              placeholder="All energy levels"
               options={ENERGIES.map((e) => ({
                 value: e,
-                label: `Energia ${
-                  e === "high" ? "alta" : e === "medium" ? "média" : "baixa"
-                }`,
+                label: `${
+                  e === "high" ? "High" : e === "medium" ? "Medium" : "Low"
+                } energy`,
               }))}
             />
             {(filterStatus || filterPriority || filterEnergy) && (
@@ -557,7 +557,7 @@ export default function TasksPage() {
                 }}
                 className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
               >
-                Limpar <X size={11} />
+                Clear <X size={11} />
               </button>
             )}
           </>
@@ -574,11 +574,11 @@ export default function TasksPage() {
       {tasks.length === 0 ? (
         <div className="rounded-2xl bg-card px-5 py-10 text-center shadow-card">
           <p className="text-sm font-medium text-foreground">
-            Sem tarefas a mostrar.
+            No tasks to show.
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Cria uma nova tarefa acima — prioridades altas valem mais pontos
-            quanto mais tempo aguardarem.
+            Create a new task above — high priority tasks earn more points
+            the longer they wait.
           </p>
         </div>
       ) : (
@@ -608,7 +608,7 @@ export default function TasksPage() {
                       }}
                       size={20}
                       fillColor={task.project.color}
-                      label={`Concluir ${task.title}`}
+                      label={`Complete ${task.title}`}
                       disabled={isCompleted || isCompletingNow}
                     />
                   </div>
@@ -623,7 +623,7 @@ export default function TasksPage() {
                           style={{
                             backgroundColor: PRIORITY_COLORS[task.priority],
                           }}
-                          title={`Prioridade ${task.priority}`}
+                          title={`${task.priority === "high" ? "High" : task.priority === "medium" ? "Medium" : "Low"} priority`}
                         />
                       )}
                       <span
@@ -637,8 +637,8 @@ export default function TasksPage() {
                       </span>
                       {task.is_hard && (
                         <span
-                          title="Tarefa difícil (+30% bónus)"
-                          aria-label="Tarefa difícil"
+                          title="Hard task (+30% bonus)"
+                          aria-label="Hard task"
                           className="inline-flex"
                         >
                           <Flame size={11} style={{ color: "#AF52DE" }} />
@@ -648,7 +648,7 @@ export default function TasksPage() {
                         <span
                           className="inline-flex items-center gap-0.5 text-xs font-medium"
                           style={{ color: "#FFC107" }}
-                          title="Pontos ganhos"
+                          title="Points earned"
                         >
                           <Star size={11} className="fill-current" />
                           {task.points_earned}
@@ -665,7 +665,7 @@ export default function TasksPage() {
                     {/* Meta row */}
                     <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
                       {task.expected_energy && (
-                        <span>energia {task.expected_energy}</span>
+                        <span>energy {task.expected_energy}</span>
                       )}
                       {task.estimated_time_minutes && (
                         <span>{task.estimated_time_minutes} min</span>
@@ -673,7 +673,7 @@ export default function TasksPage() {
                       {task.dueDate && (
                         <span
                           className="inline-flex items-center gap-1"
-                          title="Data limite"
+                          title="Due date"
                         >
                           <Calendar size={10} />
                           {formatDate(task.dueDate)}
@@ -682,7 +682,7 @@ export default function TasksPage() {
                       {task.status !== "pending" && task.status !== "completed" && (
                         <span className="inline-flex items-center gap-1">
                           <span className="h-1.5 w-1.5 rounded-full bg-[#3478F6]" />
-                          {task.status === "active" ? "ativa" : task.status}
+                          {task.status === "active" ? "active" : task.status}
                         </span>
                       )}
                     </div>
@@ -713,18 +713,18 @@ export default function TasksPage() {
                         }
                         aria-label={
                           isEditing
-                            ? "Cancelar edição"
-                            : `Editar ${task.title}`
+                            ? "Cancel edit"
+                            : `Edit ${task.title}`
                         }
-                        title={isEditing ? "Cancelar" : "Editar"}
+                        title={isEditing ? "Cancel" : "Edit"}
                         className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                       >
                         {isEditing ? <X size={13} /> : <Pencil size={13} />}
                       </button>
                       <button
                         onClick={() => handleDelete(task.id, task.title)}
-                        aria-label={`Eliminar ${task.title}`}
-                        title="Eliminar"
+                        aria-label={`Delete ${task.title}`}
+                        title="Delete"
                         className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                       >
                         <Trash2 size={13} />
@@ -735,16 +735,16 @@ export default function TasksPage() {
                           onChange={(e) =>
                             handleStatusChange(task.id, e.target.value)
                           }
-                          aria-label="Mudar estado"
+                          aria-label="Change status"
                           className="ml-0.5 rounded-md bg-transparent px-1.5 py-1 text-[11px] text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring/40 hover:bg-muted"
                         >
                           {STATUSES.map((s) => (
                             <option key={s} value={s}>
                               {s === "pending"
-                                ? "pendente"
+                                ? "pending"
                                 : s === "active"
-                                ? "ativa"
-                                : "concluída"}
+                                ? "active"
+                                : "completed"}
                             </option>
                           ))}
                         </select>
@@ -768,7 +768,7 @@ export default function TasksPage() {
                         className="rounded-md bg-muted/60 px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
                         required
                       >
-                        <option value="">Projeto…</option>
+                        <option value="">Project…</option>
                         {projects.map((p) => (
                           <option key={p.id} value={p.id}>
                             {p.name}
@@ -777,7 +777,7 @@ export default function TasksPage() {
                       </select>
                       <input
                         type="text"
-                        placeholder="Título *"
+                        placeholder="Title *"
                         value={editForm.title}
                         onChange={(e) =>
                           setEditForm({ ...editForm, title: e.target.value })
@@ -788,7 +788,7 @@ export default function TasksPage() {
                     </div>
 
                     <textarea
-                      placeholder="Descrição (opcional)"
+                      placeholder="Description (optional)"
                       value={editForm.description}
                       onChange={(e) =>
                         setEditForm({
@@ -813,7 +813,7 @@ export default function TasksPage() {
                       >
                         {PRIORITIES.map((p) => (
                           <option key={p} value={p}>
-                            {p === "high" ? "alta" : p === "medium" ? "média" : "baixa"}
+                            {p === "high" ? "High" : p === "medium" ? "Medium" : "Low"}
                           </option>
                         ))}
                       </select>
@@ -829,7 +829,7 @@ export default function TasksPage() {
                       >
                         {ENERGIES.map((en) => (
                           <option key={en} value={en}>
-                            {en === "high" ? "alta" : en === "medium" ? "média" : "baixa"}
+                            {en === "high" ? "High" : en === "medium" ? "Medium" : "Low"}
                           </option>
                         ))}
                       </select>
@@ -855,7 +855,7 @@ export default function TasksPage() {
                             dueDate: e.target.value,
                           })
                         }
-                        title="Data limite"
+                        title="Due date"
                         className="rounded-md bg-muted/60 px-2 py-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
                       />
                     </div>
@@ -881,7 +881,7 @@ export default function TasksPage() {
                               : "var(--muted-foreground)",
                           }}
                         />
-                        <span>Tarefa difícil</span>
+                        <span>Hard task</span>
                       </label>
                       <div className="flex gap-2">
                         <button
@@ -889,7 +889,7 @@ export default function TasksPage() {
                           onClick={cancelEdit}
                           className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
                         >
-                          <X size={12} /> Cancelar
+                          <X size={12} /> Cancel
                         </button>
                         <button
                           type="button"
@@ -897,7 +897,7 @@ export default function TasksPage() {
                           disabled={savingEdit}
                           className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
                         >
-                          <Save size={12} /> Guardar
+                          <Save size={12} /> Save
                         </button>
                       </div>
                     </div>
@@ -932,16 +932,16 @@ export default function TasksPage() {
             className="mb-1 font-medium"
             style={{ color: "#FFC107" }}
           >
-            +{lastBreakdown.total} pts — detalhe
+            +{lastBreakdown.total} pts — detail
           </div>
           <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-muted-foreground">
             <span>base {lastBreakdown.base}</span>
             {lastBreakdown.daysPending > 0 && (
-              <span>+{lastBreakdown.daysPending} dias</span>
+              <span>+{lastBreakdown.daysPending} days</span>
             )}
             {lastBreakdown.procrastinationBonus > 0 && (
               <span style={{ color: "#FF9500" }}>
-                +{lastBreakdown.procrastinationBonus} procrastinação
+                +{lastBreakdown.procrastinationBonus} procrastination
               </span>
             )}
             {lastBreakdown.streakBonus > 0 && (
@@ -951,12 +951,12 @@ export default function TasksPage() {
             )}
             {lastBreakdown.morningBonus > 0 && (
               <span style={{ color: "#3478F6" }}>
-                +{lastBreakdown.morningBonus} manhã
+                +{lastBreakdown.morningBonus} morning
               </span>
             )}
             {lastBreakdown.hardBonus > 0 && (
               <span style={{ color: "#AF52DE" }}>
-                +{lastBreakdown.hardBonus} difícil
+                +{lastBreakdown.hardBonus} hard
               </span>
             )}
           </div>
@@ -969,7 +969,7 @@ export default function TasksPage() {
             className="mb-1 inline-flex items-center gap-1.5 text-xs font-medium"
             style={{ color: "#FFC107" }}
           >
-            <Award size={13} /> Conquista desbloqueada
+            <Award size={13} /> Achievement unlocked
           </div>
           {newlyUnlocked.map((a) => (
             <div key={a.key} className="text-sm">

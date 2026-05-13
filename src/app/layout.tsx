@@ -52,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-PT" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           // eslint-disable-next-line react/no-danger

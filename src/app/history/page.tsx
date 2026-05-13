@@ -57,18 +57,18 @@ export default function HistoryPage() {
   }
 
   const PIE_DATA = [
-    { name: "Ganhos", value: data!.points.earned, fill: PIE_COLORS.earned },
-    { name: "Gastos", value: data!.points.spent, fill: PIE_COLORS.spent },
+    { name: "Earned", value: data!.points.earned, fill: PIE_COLORS.earned },
+    { name: "Spent", value: data!.points.spent, fill: PIE_COLORS.spent },
   ];
 
   return (
     <div className="mx-auto max-w-3xl px-6 pt-20 pb-12 sm:px-10 sm:pt-14">
       <header className="mb-8">
         <h1 className="text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]">
-          Histórico
+          History
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Os teus padrões dos últimos 90 dias.
+          Your patterns over the last 90 days.
         </p>
       </header>
 
@@ -77,24 +77,24 @@ export default function HistoryPage() {
         <div className="rounded-2xl bg-card p-4 shadow-card">
           <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground">
             <Flame size={12} style={{ color: "#FFB020" }} />
-            <span>Streak atual</span>
+            <span>Current streak</span>
           </div>
           <p className="mt-1 text-[28px] font-semibold tabular-nums leading-none">
             {data!.streak}
             <span className="ml-1 text-sm font-normal text-muted-foreground">
-              {data!.streak === 1 ? "dia" : "dias"}
+              {data!.streak === 1 ? "day" : "days"}
             </span>
           </p>
         </div>
         <div className="rounded-2xl bg-card p-4 shadow-card">
           <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground">
             <Trophy size={12} style={{ color: "#FFC107" }} />
-            <span>Melhor dia</span>
+            <span>Best day</span>
           </div>
           <p className="mt-1 text-[28px] font-semibold tabular-nums leading-none">
             {data!.personalBest}
             <span className="ml-1 text-sm font-normal text-muted-foreground">
-              tarefas
+              tasks
             </span>
           </p>
         </div>
@@ -103,7 +103,7 @@ export default function HistoryPage() {
       {/* Weekly chart */}
       <section className="mb-6 rounded-2xl bg-card p-5 shadow-card">
         <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-          Últimas 4 semanas
+          Last 4 weeks
         </h2>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={data!.weekly}>
@@ -141,7 +141,7 @@ export default function HistoryPage() {
       <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <section className="rounded-2xl bg-card p-5 shadow-card">
           <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-            Pontos
+            Points
           </h2>
           <ResponsiveContainer width="100%" height={180}>
             <PieChart>
@@ -176,25 +176,25 @@ export default function HistoryPage() {
                 className="h-2 w-2 rounded-full"
                 style={{ backgroundColor: PIE_COLORS.earned }}
               />
-              Ganhos ({data!.points.earned})
+              Earned ({data!.points.earned})
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span
                 className="h-2 w-2 rounded-full"
                 style={{ backgroundColor: PIE_COLORS.spent }}
               />
-              Gastos ({data!.points.spent})
+              Spent ({data!.points.spent})
             </span>
           </div>
         </section>
 
         <section className="rounded-2xl bg-card p-5 shadow-card">
           <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-            Top projetos
+            Top projects
           </h2>
           {data!.projects.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Sem tarefas concluídas ainda.
+              No completed tasks yet.
             </p>
           ) : (
             <ul className="flex flex-col gap-1">
@@ -213,7 +213,7 @@ export default function HistoryPage() {
                   </div>
                   <span className="text-xs text-muted-foreground tabular-nums">
                     {p.count}{" "}
-                    {p.count === 1 ? "tarefa" : "tarefas"}
+                    {p.count === 1 ? "task" : "tasks"}
                   </span>
                 </li>
               ))}
@@ -225,7 +225,7 @@ export default function HistoryPage() {
       {/* Productivity calendar (heatmap) */}
       <section className="rounded-2xl bg-card p-5 shadow-card">
         <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-          Calendário de produtividade · 90 dias
+          Productivity calendar · 90 days
         </h2>
         <div className="flex flex-wrap gap-1">
           {data!.calendar.map((day, i) => {
@@ -245,14 +245,14 @@ export default function HistoryPage() {
                 className="h-3 w-3 rounded-[3px]"
                 style={{ backgroundColor: CALENDAR_COLORS[level] }}
                 title={`${day.date}: ${day.completed} ${
-                  day.completed === 1 ? "tarefa" : "tarefas"
+                  day.completed === 1 ? "task" : "tasks"
                 }`}
               />
             );
           })}
         </div>
         <div className="mt-3 flex items-center justify-end gap-1 text-[11px] text-muted-foreground">
-          <span>Menos</span>
+          <span>Less</span>
           {CALENDAR_COLORS.map((c, i) => (
             <div
               key={i}
@@ -260,7 +260,7 @@ export default function HistoryPage() {
               style={{ backgroundColor: c }}
             />
           ))}
-          <span>Mais</span>
+          <span>More</span>
         </div>
       </section>
     </div>

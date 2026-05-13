@@ -17,17 +17,17 @@ import {
 
 const DEFAULT_REDIRECT_URI = "http://localhost:3210/api/auth/google/callback";
 
-const LLM_HELP_PROMPT = `Estou a configurar uma aplicação Next.js chamada "Focus Engine" que corre localmente no meu PC e quero ligar à minha conta de Google Calendar. Para isso preciso de criar credenciais OAuth na Google Cloud Console e obter um Client ID e um Client Secret. Guia-me passo a passo, em português de Portugal, assumindo que NÃO sou developer e nunca usei a Google Cloud Console.
+const LLM_HELP_PROMPT = `I'm setting up a Next.js app called "Focus Engine" that runs locally on my PC and I want to connect it to my Google Calendar account. To do this I need to create OAuth credentials in the Google Cloud Console and obtain a Client ID and a Client Secret. Guide me step by step, assuming I am NOT a developer and have never used the Google Cloud Console.
 
-Os passos que preciso fazer são:
-1. Criar (ou seleccionar) um projecto na Google Cloud Console.
-2. Activar a API "Google Calendar API" nesse projecto.
-3. Configurar o "OAuth consent screen" em modo "External" e "Testing", e adicionar o meu próprio email como "Test user".
-4. Criar credenciais OAuth 2.0 do tipo "Web application", com:
+The steps I need to follow are:
+1. Create (or select) a project in the Google Cloud Console.
+2. Enable the "Google Calendar API" in that project.
+3. Configure the "OAuth consent screen" in "External" and "Testing" mode, and add my own email as a "Test user".
+4. Create OAuth 2.0 credentials of type "Web application", with:
    - Authorized redirect URI = http://localhost:3210/api/auth/google/callback
-5. Copiar o Client ID e o Client Secret que aparecem no final.
+5. Copy the Client ID and Client Secret shown at the end.
 
-Diz-me onde clicar em cada passo (nomes dos menus em inglês, porque a consola não está em português) e o que devo escrever em cada campo. Avisa-me se alguma escolha tiver consequências importantes.`;
+Tell me where to click at each step (menu names are in English because the console is not localised) and what to type in each field. Warn me if any choice has important consequences.`;
 
 type GoogleSettings = {
   configured: boolean;
@@ -44,9 +44,9 @@ export default function SettingsPage() {
         <div className="mx-auto max-w-2xl px-6 pt-20 pb-12 sm:px-10 sm:pt-14" aria-busy="true">
           <header className="mb-6">
             <h1 className="text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]">
-              Definições
+              Settings
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">A carregar…</p>
+            <p className="mt-1 text-sm text-muted-foreground">Loading…</p>
           </header>
         </div>
       }
@@ -71,7 +71,7 @@ function SettingsContent() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(
     initialError === "missing_credentials"
-      ? "Tens de configurar as tuas credenciais do Google antes de ligar o Calendar."
+      ? "You need to configure your Google credentials before connecting the Calendar."
       : null
   );
   const [savedFlash, setSavedFlash] = useState(false);
@@ -91,12 +91,12 @@ function SettingsContent() {
   async function loadSettings() {
     try {
       const res = await fetch("/api/settings/google");
-      if (!res.ok) throw new Error(`Falha a carregar (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to load (${res.status})`);
       const data: GoogleSettings = await res.json();
       setSettings(data);
       if (data.redirectUri) setRedirectUri(data.redirectUri);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha a carregar definições");
+      setError(e instanceof Error ? e.message : "Failed to load settings");
     } finally {
       setLoading(false);
     }
@@ -105,7 +105,7 @@ function SettingsContent() {
   async function handleSave(e: FormEvent) {
     e.preventDefault();
     if (!clientId.trim() || !clientSecret.trim()) {
-      setError("Preenche o Client ID e o Client Secret.");
+      setError("Please fill in both the Client ID and Client Secret.");
       return;
     }
     setSaving(true);
@@ -122,7 +122,7 @@ function SettingsContent() {
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || `Falha a guardar (${res.status})`);
+        throw new Error(body.error || `Failed to save (${res.status})`);
       }
       setClientId("");
       setClientSecret("");
@@ -130,26 +130,26 @@ function SettingsContent() {
       window.setTimeout(() => setSavedFlash(false), 3000);
       await loadSettings();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha a guardar");
+      setError(e instanceof Error ? e.message : "Failed to save");
     } finally {
       setSaving(false);
     }
   }
 
   async function handleDisconnect() {
-    if (!confirm("Desligar o Google Calendar? O token será apagado mas as credenciais ficam.")) return;
+    if (!confirm("Disconnect Google Calendar? The token will be deleted but credentials will remain.")) return;
     try {
       await fetch("/api/auth/google/disconnect", { method: "POST" });
       await loadSettings();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha a desligar");
+      setError(e instanceof Error ? e.message : "Failed to disconnect");
     }
   }
 
   async function handleDeleteCredentials() {
     if (
       !confirm(
-        "Apagar credenciais Google? Vais ter de colar Client ID e Client Secret outra vez para usar o Calendar."
+        "Delete Google credentials? You will need to paste the Client ID and Client Secret again to use the Calendar."
       )
     )
       return;
@@ -157,7 +157,7 @@ function SettingsContent() {
       await fetch("/api/settings/google", { method: "DELETE" });
       await loadSettings();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha a apagar credenciais");
+      setError(e instanceof Error ? e.message : "Failed to delete credentials");
     }
   }
 
@@ -169,7 +169,7 @@ function SettingsContent() {
         window.setTimeout(() => setPromptCopied(false), 2000);
       })
       .catch(() => {
-        setError("Não consegui copiar para a área de transferência.");
+        setError("Could not copy to clipboard.");
       });
   }
 
@@ -177,10 +177,10 @@ function SettingsContent() {
     <div className="mx-auto max-w-2xl px-6 pt-20 pb-12 sm:px-10 sm:pt-14">
       <header className="mb-6">
         <h1 className="text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]">
-          Definições
+          Settings
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Configurações desta instalação da Focus Engine.
+          Configuration for this Focus Engine installation.
         </p>
       </header>
 
@@ -194,7 +194,7 @@ function SettingsContent() {
       {savedFlash && (
         <div className="mb-4 flex items-center gap-2 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-600 dark:text-emerald-400">
           <Check size={16} />
-          <span>Guardado.</span>
+          <span>Saved.</span>
         </div>
       )}
 
@@ -207,8 +207,8 @@ function SettingsContent() {
               Google Calendar
             </h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              Cada utilizador tem de criar as suas próprias credenciais OAuth na
-              Google Cloud Console e colá-las aqui.
+              Each user must create their own OAuth credentials in the
+              Google Cloud Console and paste them here.
             </p>
           </div>
           <StatusBadge settings={settings} loading={loading} />
@@ -227,7 +227,7 @@ function SettingsContent() {
                   onClick={handleDisconnect}
                   className="rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium transition-colors hover:bg-muted"
                 >
-                  Desligar Calendar
+                  Disconnect Calendar
                 </button>
               ) : (
                 <a
@@ -235,13 +235,13 @@ function SettingsContent() {
                   className="inline-flex items-center gap-1.5 rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90"
                 >
                   <Calendar size={12} />
-                  Ligar Calendar
+                  Connect Calendar
                 </a>
               )}
               <button
                 type="button"
                 onClick={handleDeleteCredentials}
-                title="Apagar credenciais"
+                title="Delete credentials"
                 className="rounded-md border border-border bg-background p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
               >
                 <Trash2 size={12} />
@@ -259,7 +259,7 @@ function SettingsContent() {
               onChange={(e) => setClientId(e.target.value)}
               placeholder={
                 settings?.configured
-                  ? "(deixa em branco para manter o actual)"
+                  ? "(leave blank to keep current)"
                   : "1234567890-abc...apps.googleusercontent.com"
               }
               className="w-full rounded-md border border-border bg-background px-3 py-2 font-mono text-xs focus:border-primary focus:outline-none"
@@ -272,7 +272,7 @@ function SettingsContent() {
               onChange={(e) => setClientSecret(e.target.value)}
               placeholder={
                 settings?.hasSecret
-                  ? "(deixa em branco para manter o actual)"
+                  ? "(leave blank to keep current)"
                   : "GOCSPX-..."
               }
               className="w-full rounded-md border border-border bg-background px-3 py-2 font-mono text-xs focus:border-primary focus:outline-none"
@@ -285,12 +285,12 @@ function SettingsContent() {
             className="inline-flex items-center gap-1 self-start text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
             {showAdvanced ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-            Avançado
+            Advanced
           </button>
           {showAdvanced && (
             <Field
               label="Redirect URI"
-              hint="Tem de coincidir EXACTAMENTE com a que registaste na Google Cloud Console."
+              hint="Must match EXACTLY what you registered in the Google Cloud Console."
             >
               <input
                 type="text"
@@ -308,11 +308,11 @@ function SettingsContent() {
               disabled={saving || (!clientId.trim() && !clientSecret.trim())}
               className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              {saving ? "A guardar…" : "Guardar credenciais"}
+              {saving ? "Saving…" : "Save credentials"}
             </button>
             {settings?.configured && !settings.connected && (
               <span className="text-xs text-muted-foreground">
-                Depois de guardar, carrega em <em>Ligar Calendar</em>.
+                After saving, click <em>Connect Calendar</em>.
               </span>
             )}
           </div>
@@ -328,7 +328,7 @@ function SettingsContent() {
         >
           <span className="flex items-center gap-2 text-base font-semibold">
             <HelpCircle size={18} className="text-muted-foreground" />
-            Como obter Client ID e Client Secret?
+            How to get a Client ID and Client Secret?
           </span>
           {showHelp ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
@@ -336,15 +336,15 @@ function SettingsContent() {
         {showHelp && (
           <div className="mt-4 space-y-4 text-sm">
             <p className="text-muted-foreground">
-              A forma mais rápida: copia o prompt abaixo, cola-o num LLM (ChatGPT,
-              Claude, Gemini, etc.) e segue as instruções que ele te der. Demora
-              tipicamente 10–15 minutos.
+              The fastest way: copy the prompt below, paste it into an LLM (ChatGPT,
+              Claude, Gemini, etc.) and follow the instructions it gives you. It
+              typically takes 10–15 minutes.
             </p>
 
             <div className="rounded-lg border border-border bg-muted/30 p-3">
               <div className="mb-2 flex items-center justify-between gap-2">
                 <span className="text-xs font-medium text-muted-foreground">
-                  Prompt pronto a copiar
+                  Ready-to-copy prompt
                 </span>
                 <button
                   type="button"
@@ -353,11 +353,11 @@ function SettingsContent() {
                 >
                   {promptCopied ? (
                     <>
-                      <Check size={12} /> Copiado
+                      <Check size={12} /> Copied
                     </>
                   ) : (
                     <>
-                      <Copy size={12} /> Copiar
+                      <Copy size={12} /> Copy
                     </>
                   )}
                 </button>
@@ -369,11 +369,11 @@ function SettingsContent() {
 
             <div>
               <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Resumo dos passos
+                Steps summary
               </p>
               <ol className="list-decimal space-y-1.5 pl-5 text-foreground/85">
                 <li>
-                  Abre a{" "}
+                  Open the{" "}
                   <a
                     href="https://console.cloud.google.com/"
                     target="_blank"
@@ -383,50 +383,50 @@ function SettingsContent() {
                     Google Cloud Console
                     <ExternalLink size={11} />
                   </a>{" "}
-                  com a tua conta Google.
+                  with your Google account.
                 </li>
-                <li>Cria um projecto novo (qualquer nome, ex: &quot;Focus Engine&quot;).</li>
+                <li>Create a new project (any name, e.g. &quot;Focus Engine&quot;).</li>
                 <li>
-                  Em <em>APIs &amp; Services → Library</em>, procura{" "}
-                  <em>&quot;Google Calendar API&quot;</em> e activa-a.
-                </li>
-                <li>
-                  Em <em>APIs &amp; Services → OAuth consent screen</em>, escolhe{" "}
-                  <em>External</em>, deixa em modo <em>Testing</em>, e adiciona o
-                  teu email em <em>Test users</em>.
+                  Under <em>APIs &amp; Services → Library</em>, search for{" "}
+                  <em>&quot;Google Calendar API&quot;</em> and enable it.
                 </li>
                 <li>
-                  Em <em>APIs &amp; Services → Credentials</em>, cria{" "}
-                  <em>OAuth client ID</em> do tipo <em>Web application</em>.
+                  Under <em>APIs &amp; Services → OAuth consent screen</em>, choose{" "}
+                  <em>External</em>, keep it in <em>Testing</em> mode, and add your
+                  email under <em>Test users</em>.
                 </li>
                 <li>
-                  Em <em>Authorized redirect URIs</em>, cola exactamente:
+                  Under <em>APIs &amp; Services → Credentials</em>, create an{" "}
+                  <em>OAuth client ID</em> of type <em>Web application</em>.
+                </li>
+                <li>
+                  Under <em>Authorized redirect URIs</em>, paste exactly:
                   <code className="ml-1 inline-block rounded bg-muted px-1.5 py-0.5 font-mono text-[11px]">
                     {DEFAULT_REDIRECT_URI}
                   </code>
                 </li>
                 <li>
-                  Copia o <em>Client ID</em> e o <em>Client Secret</em> e cola-os
-                  no formulário acima.
+                  Copy the <em>Client ID</em> and <em>Client Secret</em> and paste
+                  them in the form above.
                 </li>
               </ol>
             </div>
 
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-300">
-              <strong className="block mb-1">Notas:</strong>
+              <strong className="block mb-1">Notes:</strong>
               <ul className="list-disc space-y-1 pl-4">
                 <li>
-                  Mantém o ecrã de consentimento em <em>Testing</em> — não
-                  precisas de submeter a verificação Google enquanto fores só tu
-                  (e até 100 utilizadores adicionados manualmente).
+                  Keep the consent screen in <em>Testing</em> mode — you don&apos;t
+                  need to submit for Google verification as long as it is just you
+                  (and up to 100 manually added users).
                 </li>
                 <li>
-                  Se mudares a porta do servidor (não 3210), tens de actualizar o
-                  Redirect URI aqui <strong>e</strong> na Google Cloud Console.
+                  If you change the server port (not 3210), you must update the
+                  Redirect URI here <strong>and</strong> in the Google Cloud Console.
                 </li>
                 <li>
-                  O Client Secret nunca sai do teu PC — fica guardado no SQLite
-                  desta instalação.
+                  The Client Secret never leaves your PC — it is stored in the
+                  SQLite database of this installation.
                 </li>
               </ul>
             </div>
@@ -476,20 +476,20 @@ function StatusBadge({
   if (settings.connected) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs text-emerald-600 dark:text-emerald-400">
-        <Check size={11} /> Ligado
+        <Check size={11} /> Connected
       </span>
     );
   }
   if (settings.configured) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs text-amber-600 dark:text-amber-400">
-        Credenciais OK · Por ligar
+        Credentials OK · Not connected
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-      Não configurado
+      Not configured
     </span>
   );
 }

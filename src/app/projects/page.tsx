@@ -91,11 +91,11 @@ export default function ProjectsPage() {
   async function loadProjects() {
     try {
       const res = await fetch("/api/projects");
-      if (!res.ok) throw new Error(`Falha a carregar (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to load (${res.status})`);
       setProjects(await res.json());
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha a carregar projetos");
+      setError(e instanceof Error ? e.message : "Failed to load projects");
     }
   }
 
@@ -113,14 +113,14 @@ export default function ProjectsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim(), color, icon }),
       });
-      if (!res.ok) throw new Error(`Falha a criar (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to create (${res.status})`);
       setName("");
       setColor(COLOR_OPTIONS[0]);
       setIcon("folder");
       setShowAdvanced(false);
       await loadProjects();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha a criar projeto");
+      setError(e instanceof Error ? e.message : "Failed to create project");
     } finally {
       setLoading(false);
     }
@@ -149,11 +149,11 @@ export default function ProjectsPage() {
           icon: editIcon,
         }),
       });
-      if (!res.ok) throw new Error(`Falha a guardar (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to save (${res.status})`);
       cancelEdit();
       await loadProjects();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha a guardar projeto");
+      setError(e instanceof Error ? e.message : "Failed to save project");
     } finally {
       setSavingEdit(false);
     }
@@ -162,17 +162,17 @@ export default function ProjectsPage() {
   async function handleDelete(id: number, name: string) {
     if (
       !confirm(
-        `Eliminar "${name}"? As tarefas associadas serão também removidas.`
+        `Delete "${name}"? All associated tasks will also be removed.`
       )
     )
       return;
     try {
       const res = await fetch(`/api/projects/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error(`Falha a eliminar (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to delete (${res.status})`);
       setProjects(projects.filter((p) => p.id !== id));
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha a eliminar projeto");
+      setError(e instanceof Error ? e.message : "Failed to delete project");
     }
   }
 
@@ -180,10 +180,10 @@ export default function ProjectsPage() {
     <div className="mx-auto max-w-2xl px-6 pt-20 pb-12 sm:px-10 sm:pt-14">
       <header className="mb-6">
         <h1 className="text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]">
-          Projetos
+          Projects
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Organiza as tuas tarefas por área da tua vida.
+          Organize your tasks by area of your life.
         </p>
       </header>
 
@@ -206,7 +206,7 @@ export default function ProjectsPage() {
           />
           <input
             type="text"
-            placeholder="Novo projeto…"
+            placeholder="New project…"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="min-w-0 flex-1 bg-transparent px-1 py-2 text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none"
@@ -219,7 +219,7 @@ export default function ProjectsPage() {
             aria-expanded={showAdvanced}
           >
             {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-            Cor e ícone
+            Color & icon
           </button>
           <button
             type="submit"
@@ -227,7 +227,7 @@ export default function ProjectsPage() {
             className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             <Plus size={13} />
-            Adicionar
+            Add
           </button>
         </div>
 
@@ -243,10 +243,10 @@ export default function ProjectsPage() {
       {projects.length === 0 ? (
         <div className="rounded-2xl bg-card px-5 py-10 text-center shadow-card">
           <p className="text-sm font-medium text-foreground">
-            Sem projetos ainda.
+            No projects yet.
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Cria o teu primeiro projeto acima para começar a organizar.
+            Create your first project above to start organizing.
           </p>
         </div>
       ) : (
@@ -271,7 +271,7 @@ export default function ProjectsPage() {
                   <Link
                     href={`/tasks?projectId=${project.id}`}
                     className="flex-1 truncate text-[15px] text-foreground hover:underline"
-                    title="Ver tarefas deste projeto"
+                    title="View tasks for this project"
                   >
                     {project.name}
                   </Link>
@@ -285,15 +285,15 @@ export default function ProjectsPage() {
                       onClick={() =>
                         isEditing ? cancelEdit() : startEdit(project)
                       }
-                      aria-label={isEditing ? "Cancelar" : "Editar"}
-                      title={isEditing ? "Cancelar" : "Editar"}
+                      aria-label={isEditing ? "Cancel" : "Edit"}
+                      title={isEditing ? "Cancel" : "Edit"}
                       className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                     >
                       {isEditing ? <X size={13} /> : <Pencil size={13} />}
                     </button>
                     <button
                       onClick={() => handleDelete(project.id, project.name)}
-                      aria-label="Eliminar"
+                      aria-label="Delete"
                       className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                     >
                       <Trash2 size={13} />
@@ -305,7 +305,7 @@ export default function ProjectsPage() {
                   <div className="mb-2 ml-7 mr-1 flex flex-col gap-3 rounded-lg bg-background p-3 shadow-card">
                     <input
                       type="text"
-                      placeholder="Nome do projeto"
+                      placeholder="Project name"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       className="rounded-md bg-muted/60 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
@@ -322,7 +322,7 @@ export default function ProjectsPage() {
                         onClick={cancelEdit}
                         className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
                       >
-                        <X size={12} /> Cancelar
+                        <X size={12} /> Cancel
                       </button>
                       <button
                         type="button"
@@ -330,7 +330,7 @@ export default function ProjectsPage() {
                         disabled={savingEdit}
                         className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
                       >
-                        <Save size={12} /> Guardar
+                        <Save size={12} /> Save
                       </button>
                     </div>
                   </div>
@@ -358,7 +358,7 @@ function ColorPicker({
   return (
     <div className="flex flex-col gap-2">
       <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-        Cor
+        Color
       </span>
       <div className="flex flex-wrap gap-1.5">
         {COLOR_OPTIONS.map((c) => (
@@ -368,7 +368,7 @@ function ColorPicker({
             onClick={() => onSelect(c)}
             className="relative flex h-7 w-7 items-center justify-center rounded-full transition-transform hover:scale-110"
             style={{ backgroundColor: c }}
-            aria-label={`Cor ${c}`}
+            aria-label={`Color ${c}`}
             aria-pressed={selected === c}
           >
             {selected === c && (
@@ -391,7 +391,7 @@ function IconPicker({
   return (
     <div className="flex flex-col gap-2">
       <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-        Ícone
+        Icon
       </span>
       <div className="flex flex-wrap gap-1">
         {ICON_OPTIONS.map(({ name: iconName, Icon }) => {
@@ -407,7 +407,7 @@ function IconPicker({
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
               aria-pressed={isSelected}
-              aria-label={`Ícone ${iconName}`}
+              aria-label={`Icon ${iconName}`}
             >
               <Icon size={15} />
             </button>

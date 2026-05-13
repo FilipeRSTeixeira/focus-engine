@@ -90,14 +90,14 @@ const PRIORITY_DOT: Record<string, string> = {
 /* -------------------------------------------------------------------------- */
 
 function greeting(hour: number): string {
-  if (hour < 5) return "Boa madrugada";
-  if (hour < 12) return "Bom dia";
-  if (hour < 19) return "Boa tarde";
-  return "Boa noite";
+  if (hour < 5) return "Good night";
+  if (hour < 12) return "Good morning";
+  if (hour < 19) return "Good afternoon";
+  return "Good evening";
 }
 
 function formatDate(d: Date): string {
-  return d.toLocaleDateString("pt-PT", {
+  return d.toLocaleDateString("en-US", {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -186,7 +186,7 @@ export default function DashboardPage() {
       <div
         className="mx-auto max-w-3xl px-6 pt-20 pb-16 sm:px-10 sm:pt-14"
         aria-busy="true"
-        aria-label="A carregar dashboard"
+        aria-label="Loading dashboard"
       >
         <Skeleton className="mb-2 h-9 w-64" />
         <Skeleton className="mb-10 h-4 w-48" />
@@ -220,21 +220,21 @@ export default function DashboardPage() {
       </header>
 
       {/* ------------------------- Level / XP -------------------------- */}
-      <section aria-label="Progresso de nível" className="mb-6">
+      <section aria-label="Level progress" className="mb-6">
         <div className="mb-2 flex items-baseline justify-between gap-3">
           <div className="flex items-baseline gap-2">
             <span
               className="text-[13px] font-semibold uppercase tracking-[0.08em]"
               style={{ color: level.color }}
             >
-              Nível {level.level}
+              Level {level.level}
             </span>
             <span className="text-[13px] text-muted-foreground">
               {level.tier}
             </span>
           </div>
           <span className="text-xs text-muted-foreground tabular-nums">
-            {level.xpToNext} XP para nível {level.level + 1}
+            {level.xpToNext} XP to level {level.level + 1}
           </span>
         </div>
         <div
@@ -261,7 +261,7 @@ export default function DashboardPage() {
           <span className="font-medium text-foreground tabular-nums">
             {d.points}
           </span>
-          <span>pontos hoje</span>
+          <span>points today</span>
         </span>
         <span className="text-border" aria-hidden>
           ·
@@ -275,7 +275,7 @@ export default function DashboardPage() {
           <span className="font-medium text-foreground tabular-nums">
             {d.streak}
           </span>
-          <span>{d.streak === 1 ? "dia seguido" : "dias seguidos"}</span>
+          <span>{d.streak === 1 ? "day streak" : "days streak"}</span>
         </span>
         <span className="text-border" aria-hidden>
           ·
@@ -284,21 +284,21 @@ export default function DashboardPage() {
           <span className="font-medium text-foreground tabular-nums">
             {d.pendingTasks}
           </span>{" "}
-          {d.pendingTasks === 1 ? "tarefa pendente" : "tarefas pendentes"}
+          {d.pendingTasks === 1 ? "pending task" : "pending tasks"}
         </span>
       </section>
 
-      {/* ------------------------ Hoje (tasks) ------------------------- */}
-      <section className="mb-10" aria-label="Tarefas para hoje">
+      {/* ------------------------ Today (tasks) ------------------------- */}
+      <section className="mb-10" aria-label="Tasks for today">
         <div className="mb-2 flex items-center justify-between px-1">
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-            Hoje
+            Today
           </h2>
           <Link
             href="/tasks"
             className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
-            Ver todas <ArrowRight size={11} />
+            View all <ArrowRight size={11} />
           </Link>
         </div>
 
@@ -316,7 +316,7 @@ export default function DashboardPage() {
                   onChange={() => handleComplete(t.id)}
                   size={20}
                   fillColor={t.project?.color}
-                  label={`Concluir ${t.title}`}
+                  label={`Complete ${t.title}`}
                   disabled={completing.has(t.id)}
                 />
                 <div className="min-w-0 flex-1">
@@ -326,7 +326,7 @@ export default function DashboardPage() {
                         aria-hidden
                         className="h-1.5 w-1.5 shrink-0 rounded-full"
                         style={{ backgroundColor: PRIORITY_DOT.high }}
-                        title="Prioridade alta"
+                        title="High priority"
                       />
                     )}
                     <span className="truncate text-sm text-foreground">
@@ -352,17 +352,17 @@ export default function DashboardPage() {
 
       {/* --------------------- Recent achievements --------------------- */}
       {recentAchievements.length > 0 && (
-        <section className="mb-10" aria-label="Conquistas recentes">
+        <section className="mb-10" aria-label="Recent achievements">
           <div className="mb-2 flex items-center justify-between px-1">
             <h2 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
               <Sparkles size={11} style={{ color: "#FFC107" }} />
-              Conquistas Recentes
+              Recent Achievements
             </h2>
             <Link
               href="/achievements"
               className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
             >
-              Ver todas <ArrowRight size={11} />
+              View all <ArrowRight size={11} />
             </Link>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -382,9 +382,9 @@ export default function DashboardPage() {
 
       {/* ----------------------- Yesterday recap ----------------------- */}
       {d.yesterdayTasks.length > 0 && (
-        <section className="mb-10" aria-label="Resumo de ontem">
+        <section className="mb-10" aria-label="Yesterday recap">
           <h2 className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-            Ontem
+            Yesterday
           </h2>
           <ul className="flex flex-col">
             {d.yesterdayTasks.map((task, i) => (
@@ -421,16 +421,16 @@ export default function DashboardPage() {
 
       {/* -------------------- Unlocked rewards ------------------------- */}
       {d.unlockedRewards.length > 0 && (
-        <section className="mb-10" aria-label="Recompensas desbloqueadas">
+        <section className="mb-10" aria-label="Unlocked rewards">
           <div className="mb-2 flex items-center justify-between px-1">
             <h2 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-              Recompensas Desbloqueadas
+              Unlocked Rewards
             </h2>
             <Link
               href="/rewards"
               className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
             >
-              Ver todas <ArrowRight size={11} />
+              View all <ArrowRight size={11} />
             </Link>
           </div>
           <ul className="flex flex-col">
@@ -455,7 +455,7 @@ export default function DashboardPage() {
 
       {/* ------------------------ Quick actions ------------------------ */}
       <section
-        aria-label="Ações rápidas"
+        aria-label="Quick actions"
         className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-border pt-6 text-sm"
       >
         <Link
@@ -463,21 +463,21 @@ export default function DashboardPage() {
           className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
         >
           <Timer size={14} style={{ color: "#FF3B30" }} />
-          Iniciar Focus
+          Start Focus
         </Link>
         <Link
           href="/tasks"
           className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
         >
           <ListTodo size={14} style={{ color: "#FFC107" }} />
-          Ver Tarefas
+          View Tasks
         </Link>
         <Link
           href="/daily-review"
           className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
         >
           <NotebookPen size={14} style={{ color: "#34C759" }} />
-          Revisão Diária
+          Daily Review
         </Link>
       </section>
 
@@ -512,15 +512,15 @@ function EmptyToday() {
         <Sparkles size={18} style={{ color: "#FFC107" }} />
       </div>
       <p className="text-sm font-medium text-foreground">
-        Tudo feito por hoje.
+        All done for today.
       </p>
       <p className="mt-1 text-xs text-muted-foreground">
-        Adiciona uma nova tarefa ou descansa.{" "}
+        Add a new task or take a break.{" "}
         <Link
           href="/tasks"
           className="text-foreground underline-offset-4 hover:underline"
         >
-          Ir para Tarefas
+          Go to Tasks
         </Link>
       </p>
     </div>

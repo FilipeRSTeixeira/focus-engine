@@ -5,12 +5,12 @@ import { Check, ChevronDown, ChevronUp, Zap } from "lucide-react";
 import { Skeleton } from "@/components/skeleton";
 
 const DISTRACTION_OPTIONS = [
-  { value: "phone", label: "Telemóvel" },
-  { value: "curiosity", label: "Curiosidade" },
-  { value: "other-people", label: "Pessoas" },
-  { value: "environment", label: "Ambiente" },
-  { value: "fatigue", label: "Cansaço" },
-  { value: "other", label: "Outro" },
+  { value: "phone", label: "Phone" },
+  { value: "curiosity", label: "Curiosity" },
+  { value: "other-people", label: "People" },
+  { value: "environment", label: "Environment" },
+  { value: "fatigue", label: "Fatigue" },
+  { value: "other", label: "Other" },
 ];
 
 type Review = {
@@ -117,16 +117,15 @@ export default function DailyReviewPage() {
       <div className="mx-auto max-w-2xl px-6 pt-20 pb-12 text-center sm:px-10 sm:pt-14">
         <header className="mb-6 text-left">
           <h1 className="text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]">
-            Revisão Diária
+            Daily Review
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Reflete no teu dia.
+            Reflect on your day.
           </p>
         </header>
         <div className="rounded-2xl bg-card px-5 py-10 text-left shadow-card">
           <p className="text-sm text-muted-foreground">
-            Conclui pelo menos uma tarefa hoje para desbloquear a revisão
-            diária.
+            Complete at least one task today to unlock the daily review.
           </p>
         </div>
       </div>
@@ -139,10 +138,10 @@ export default function DailyReviewPage() {
     <div className="mx-auto max-w-2xl px-6 pt-20 pb-12 sm:px-10 sm:pt-14">
       <header className="mb-6">
         <h1 className="text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]">
-          Revisão Diária
+          Daily Review
         </h1>
         <p className="mt-1 text-sm capitalize text-muted-foreground">
-          {new Date().toLocaleDateString("pt-PT", {
+          {new Date().toLocaleDateString("en-US", {
             weekday: "long",
             day: "numeric",
             month: "long",
@@ -156,7 +155,7 @@ export default function DailyReviewPage() {
           <label className="text-sm font-medium text-foreground">
             <span className="inline-flex items-center gap-1.5">
               <Zap size={14} style={{ color: "#FFC107" }} />
-              Energia
+              Energy
             </span>
           </label>
           <span className="text-sm font-medium tabular-nums">
@@ -172,8 +171,8 @@ export default function DailyReviewPage() {
           className="w-full accent-[color:var(--primary)]"
         />
         <div className="mt-1 flex justify-between text-[11px] text-muted-foreground">
-          <span>Baixa</span>
-          <span>Alta</span>
+          <span>Low</span>
+          <span>High</span>
         </div>
       </section>
 
@@ -183,19 +182,19 @@ export default function DailyReviewPage() {
         className="mb-4 rounded-2xl bg-card p-5 shadow-card"
       >
         <label className="mb-2 block text-sm font-medium text-foreground">
-          O que correu bem hoje?
+          What went well today?
         </label>
         <textarea
           value={wentWell}
           onChange={(e) => setWentWell(e.target.value)}
-          placeholder="Reflete nas tuas vitórias…"
+          placeholder="Reflect on your wins…"
           rows={4}
           className="mb-4 w-full rounded-md bg-muted/60 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
           required
         />
 
         <label className="mb-2 block text-sm font-medium text-foreground">
-          Distrações
+          Distractions
         </label>
         <div className="mb-4 flex flex-wrap gap-2">
           {DISTRACTION_OPTIONS.map((option) => {
@@ -224,10 +223,10 @@ export default function DailyReviewPage() {
           className="w-full rounded-md bg-primary py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50 sm:w-auto sm:px-5"
         >
           {submitted
-            ? "Guardado ✓"
+            ? "Saved ✓"
             : submitting
-            ? "A guardar…"
-            : "Guardar revisão"}
+            ? "Saving…"
+            : "Save review"}
         </button>
       </form>
 
@@ -239,7 +238,7 @@ export default function DailyReviewPage() {
             className="mb-3 inline-flex items-center gap-1.5 px-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground transition-colors hover:text-foreground"
           >
             {showHistory ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-            Revisões anteriores ({reviews.length})
+            Previous reviews ({reviews.length})
           </button>
 
           {showHistory && (
@@ -251,13 +250,13 @@ export default function DailyReviewPage() {
                 >
                   <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
                     <span>
-                      {new Date(review.date).toLocaleDateString("pt-PT", {
+                      {new Date(review.date).toLocaleDateString("en-US", {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
                       })}{" "}
                       · {review.tasks_completed}{" "}
-                      {review.tasks_completed === 1 ? "tarefa" : "tarefas"}
+                      {review.tasks_completed === 1 ? "task" : "tasks"}
                     </span>
                     {review.energy_level && (
                       <span className="inline-flex items-center gap-1">

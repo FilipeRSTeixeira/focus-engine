@@ -61,7 +61,7 @@ export function FocusMode({
       <button
         onClick={exitFocusMode}
         className="absolute right-3 top-3 z-50 flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:right-5 sm:top-5"
-        aria-label="Sair do modo foco"
+        aria-label="Exit focus mode"
       >
         <X size={18} />
       </button>
@@ -98,7 +98,7 @@ export function FocusMode({
             className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-muted px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground sm:mt-8"
           >
             <Maximize2 size={14} />
-            Ecrã inteiro
+            Full screen
           </button>
         </div>
       )}

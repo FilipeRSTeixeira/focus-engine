@@ -1,100 +1,100 @@
-# Focus Engine — Instalação
+# Focus Engine — Installation
 
-Guia para pôr a Focus Engine a correr no teu PC Windows. A app corre **localmente** — toda a tua informação fica no teu computador.
+Guide to get Focus Engine running on your Windows PC. The app runs **locally** — all your data stays on your computer.
 
-## 1. Pré-requisitos
+## 1. Prerequisites
 
-Precisas de ter instalado:
+You need the following installed:
 
-- **Node.js 20 ou superior** ([nodejs.org](https://nodejs.org/) — descarrega a versão "LTS")
-- **PowerShell** (já vem no Windows)
-- Cerca de **500 MB de espaço em disco**
+- **Node.js 20 or higher** ([nodejs.org](https://nodejs.org/) — download the "LTS" version)
+- **PowerShell** (already included with Windows)
+- About **500 MB of free disk space**
 
-Para confirmar que tens Node.js, abre o PowerShell e escreve:
+To confirm Node.js is installed, open PowerShell and type:
 
 ```powershell
 node --version
 ```
 
-Deves ver algo como `v20.x.x` ou superior. Se não vires, instala o Node.js primeiro.
+You should see something like `v20.x.x` or higher. If not, install Node.js first.
 
-## 2. Instalação rápida (recomendada)
+## 2. Quick install (recommended)
 
-Dentro da pasta da Focus Engine, abre o PowerShell e corre:
+Inside the Focus Engine folder, open PowerShell and run:
 
 ```powershell
 .\setup.ps1
 ```
 
-O script trata de tudo automaticamente: instala dependências, prepara a base de dados e oferece-te arrancar a app. Demora 2 a 5 minutos da primeira vez.
+The script handles everything automatically: installs dependencies, sets up the database, and offers to start the app. It takes 2–5 minutes the first time.
 
-> **Se aparecer um erro de "execution policy":** corre primeiro este comando no PowerShell para autorizar a execução de scripts (só nesta sessão):
+> **If you see an "execution policy" error:** run this command in PowerShell first to allow script execution (for this session only):
 > ```powershell
 > Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 > ```
 
-## 3. Instalação manual (passo-a-passo)
+## 3. Manual install (step by step)
 
-Se preferires fazer à mão, dentro da pasta da app:
+If you prefer to do it manually, inside the app folder:
 
 ```powershell
-# 1. Instalar dependências
+# 1. Install dependencies
 npm install
 
-# 2. Gerar o cliente Prisma
+# 2. Generate the Prisma client
 npx prisma generate
 
-# 3. Criar a base de dados (SQLite)
+# 3. Create the database (SQLite)
 npx prisma migrate deploy
 
-# 4. Arrancar a app
+# 4. Start the app
 npm run dev
 ```
 
-## 4. Aceder à app
+## 4. Accessing the app
 
-Com a app a correr, abre o browser em:
+With the app running, open your browser at:
 
 **http://localhost:3210**
 
-Para fechar a app, volta ao PowerShell e carrega `Ctrl+C`. Para a abrir noutro dia, basta correr `npm run dev` na pasta.
+To stop the app, go back to PowerShell and press `Ctrl+C`. To start it again another day, just run `npm run dev` inside the folder.
 
-## 5. Ligar ao Google Calendar (opcional)
+## 5. Connecting to Google Calendar (optional)
 
-A integração com o Google Calendar permite que as tarefas que crias na app apareçam automaticamente no teu calendário. **Cada utilizador tem de criar as suas próprias credenciais** numa conta gratuita da Google Cloud Console.
+The Google Calendar integration lets tasks you create in the app appear automatically in your calendar. **Each user must create their own credentials** using a free Google Cloud Console account.
 
-Na app, vai a **Definições** (na barra lateral) e segue as instruções da secção *"Como obter Client ID e Client Secret?"*. Lá tens:
+In the app, go to **Settings** (in the sidebar) and follow the instructions in the *"How to get a Client ID and Client Secret?"* section. There you will find:
 
-- Um resumo dos 7 passos.
-- Um **prompt pronto a copiar** para colares num ChatGPT/Claude/Gemini, que te guia em conversa.
+- A summary of the 7 steps.
+- A **ready-to-copy prompt** to paste into a ChatGPT/Claude/Gemini chat that guides you through the process conversationally.
 
-O processo demora tipicamente 10–15 minutos da primeira vez. Não precisas de ser developer.
+The process typically takes 10–15 minutes the first time. You don't need to be a developer.
 
-## 6. Onde fica guardada a tua informação
+## 6. Where your data is stored
 
-Tudo fica no teu PC, nesta pasta:
+Everything stays on your PC, in this folder:
 
-- `prisma/dev.db` — tarefas, projectos, pontos, recompensas, histórico.
-- `google-token.json` — token de acesso ao teu Google Calendar (se ligares).
-- A informação **nunca é enviada para a internet**, excepto se ligares ao Google Calendar (e mesmo aí só comunica com a tua conta Google, directamente).
+- `prisma/dev.db` — tasks, projects, points, rewards, history.
+- `google-token.json` — access token for your Google Calendar (if connected).
+- Your data is **never sent to the internet**, except when connected to Google Calendar (and even then it communicates only with your own Google account, directly).
 
-Para fazer backup, copia simplesmente a pasta `prisma/`.
+To back up your data, simply copy the `prisma/` folder.
 
-## 7. Resolução de problemas
+## 7. Troubleshooting
 
-**"node não é reconhecido…"** — O Node.js não está instalado ou não está no PATH. Instala-o de [nodejs.org](https://nodejs.org/) e reinicia o PowerShell.
+**"node is not recognised…"** — Node.js is not installed or not on the PATH. Install it from [nodejs.org](https://nodejs.org/) and restart PowerShell.
 
-**"npm install falha com permissões"** — Corre o PowerShell como administrador, ou usa uma pasta dentro de `C:\Users\<oTeuNome>\` em vez de `C:\Program Files\`.
+**"npm install fails with permissions"** — Run PowerShell as Administrator, or use a folder inside `C:\Users\<YourName>\` instead of `C:\Program Files\`.
 
-**"Porta 3210 já em uso"** — Outra coisa está a usar essa porta. Fecha-a, ou edita `package.json` e muda `next dev -p 3210` para outra porta (ex.: `-p 3211`). Se mudares a porta, também tens de actualizar o Redirect URI nas Definições do Calendar.
+**"Port 3210 already in use"** — Something else is using that port. Close it, or edit `package.json` and change `next dev -p 3210` to another port (e.g. `-p 3211`). If you change the port, you must also update the Redirect URI in the Calendar Settings.
 
-**"A app abre mas não mostra dados"** — Reinicia a app (`Ctrl+C` no PowerShell e `npm run dev` outra vez). Se persistir, verifica se o ficheiro `prisma/dev.db` existe.
+**"App opens but shows no data"** — Restart the app (`Ctrl+C` in PowerShell then `npm run dev` again). If the issue persists, check that the file `prisma/dev.db` exists.
 
-**"O Calendar não está a ligar"** — Confirma em Definições que tens Client ID e Client Secret correctos, e que o Redirect URI registado na Google Cloud Console é **exactamente** `http://localhost:3210/api/auth/google/callback`.
+**"Calendar won't connect"** — Confirm in Settings that you have the correct Client ID and Client Secret, and that the Redirect URI registered in Google Cloud Console is **exactly** `http://localhost:3210/api/auth/google/callback`.
 
-## 8. Actualizar para uma versão nova
+## 8. Updating to a new version
 
-Quando receberes uma versão actualizada da app:
+When you receive an updated version of the app:
 
 ```powershell
 npm install
@@ -102,8 +102,8 @@ npx prisma migrate deploy
 npx prisma generate
 ```
 
-Os teus dados (`prisma/dev.db`) ficam intactos.
+Your data (`prisma/dev.db`) will remain intact.
 
-## 9. Apagar tudo
+## 9. Wiping everything
 
-Se quiseres apagar toda a informação e começar do zero, apaga os ficheiros `prisma/dev.db` e `google-token.json`. Depois corre `npx prisma migrate deploy` outra vez para recriar a base de dados vazia.
+If you want to delete all data and start from scratch, delete the files `prisma/dev.db` and `google-token.json`. Then run `npx prisma migrate deploy` again to recreate an empty database.

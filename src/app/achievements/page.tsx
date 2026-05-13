@@ -105,10 +105,10 @@ export default function AchievementsPage() {
     <div className="mx-auto max-w-3xl px-6 pt-20 pb-12 sm:px-10 sm:pt-14">
       <header className="mb-6">
         <h1 className="text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]">
-          Conquistas
+          Achievements
         </h1>
         <p className="mt-1 text-sm text-muted-foreground tabular-nums">
-          {data!.unlockedCount} de {data!.totalCount} desbloqueadas
+          {data!.unlockedCount} of {data!.totalCount} unlocked
         </p>
       </header>
 
@@ -132,7 +132,7 @@ export default function AchievementsPage() {
       {items.length === 0 ? (
         <div className="rounded-2xl bg-card px-5 py-10 text-center shadow-card">
           <p className="text-sm text-muted-foreground">
-            Sem conquistas definidas ainda.
+            No achievements defined yet.
           </p>
         </div>
       ) : (
@@ -176,7 +176,7 @@ export default function AchievementsPage() {
                     </span>
                     {a.unlocked && a.unlockedAt && (
                       <span className="text-[10px] text-muted-foreground tabular-nums">
-                        {new Date(a.unlockedAt).toLocaleDateString("pt-PT", {
+                        {new Date(a.unlockedAt).toLocaleDateString("en-US", {
                           day: "2-digit",
                           month: "short",
                         })}

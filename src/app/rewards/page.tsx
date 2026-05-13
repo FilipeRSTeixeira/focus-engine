@@ -42,7 +42,7 @@ function durationLabel(val: string): string {
 
 function formatDatePt(iso: string | null | undefined): string {
   if (!iso) return "";
-  return new Date(iso).toLocaleDateString("pt-PT", {
+  return new Date(iso).toLocaleDateString("en-US", {
     day: "2-digit",
     month: "short",
   });
@@ -87,7 +87,7 @@ export default function RewardsPage() {
         fetch("/api/rewards/spent"),
       ]);
       if (!rewardsRes.ok || !earnedRes.ok || !spentRes.ok) {
-        throw new Error("Falha a carregar recompensas");
+        throw new Error("Failed to load rewards");
       }
       const [rewardsData, earnedData, spentData] = await Promise.all([
         rewardsRes.json(),
@@ -100,7 +100,7 @@ export default function RewardsPage() {
     } catch (e) {
       setMessage({
         type: "error",
-        text: e instanceof Error ? e.message : "Falha a carregar",
+        text: e instanceof Error ? e.message : "Failed to load",
       });
     }
   }
@@ -141,14 +141,14 @@ export default function RewardsPage() {
     const result = await res.json();
     if (result.error) {
       const msgs: Record<string, string> = {
-        max_active: "Máximo de 2 recompensas ativas por dia atingido.",
-        not_available: "Esta recompensa não está disponível.",
+        max_active: "Maximum of 2 active rewards per day reached.",
+        not_available: "This reward is not available.",
         insufficient_points:
-          "Não tens pontos suficientes para ativar esta recompensa.",
+          "You don't have enough points to activate this reward.",
       };
-      setMessage({ type: "error", text: msgs[result.error] || "Falha a ativar." });
+      setMessage({ type: "error", text: msgs[result.error] || "Failed to activate." });
     } else {
-      setMessage({ type: "success", text: "Recompensa ativada." });
+      setMessage({ type: "success", text: "Reward activated." });
       await load();
     }
     setTimeout(() => setMessage(null), 3000);
@@ -179,13 +179,13 @@ export default function RewardsPage() {
           expiresAt: editExpiresAt || null,
         }),
       });
-      if (!res.ok) throw new Error(`Falha a guardar (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to save (${res.status})`);
       cancelEdit();
       await load();
     } catch (e) {
       setMessage({
         type: "error",
-        text: e instanceof Error ? e.message : "Falha a guardar",
+        text: e instanceof Error ? e.message : "Failed to save",
       });
     } finally {
       setSavingEdit(false);
@@ -193,15 +193,15 @@ export default function RewardsPage() {
   }
 
   async function handleDelete(id: number, title: string) {
-    if (!confirm(`Eliminar "${title}"?`)) return;
+    if (!confirm(`Delete "${title}"?`)) return;
     try {
       const res = await fetch(`/api/rewards/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error(`Falha a eliminar (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to delete (${res.status})`);
       await load();
     } catch (e) {
       setMessage({
         type: "error",
-        text: e instanceof Error ? e.message : "Falha a eliminar",
+        text: e instanceof Error ? e.message : "Failed to delete",
       });
     }
   }
@@ -223,7 +223,7 @@ export default function RewardsPage() {
       {/* Header */}
       <header className="mb-6">
         <h1 className="text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]">
-          Recompensas
+          Rewards
         </h1>
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
@@ -231,14 +231,14 @@ export default function RewardsPage() {
             <span className="font-medium text-foreground tabular-nums">
               {earned}
             </span>
-            <span>ganhos</span>
+            <span>earned</span>
           </span>
           <span aria-hidden className="text-border">·</span>
           <span>
             <span className="font-medium text-foreground tabular-nums">
               {spent}
             </span>{" "}
-            gastos
+            spent
           </span>
           <span aria-hidden className="text-border">·</span>
           <span>
@@ -249,7 +249,7 @@ export default function RewardsPage() {
             >
               {availablePoints}
             </span>{" "}
-            disponíveis
+            available
           </span>
         </div>
       </header>
@@ -283,7 +283,7 @@ export default function RewardsPage() {
           </span>
           <input
             type="text"
-            placeholder="Nova recompensa…"
+            placeholder="New reward…"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="min-w-0 flex-1 bg-transparent px-1 py-2 text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none"
@@ -305,7 +305,7 @@ export default function RewardsPage() {
             aria-expanded={showAdvanced}
           >
             {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-            Opções
+            Options
           </button>
           <button
             type="submit"
@@ -313,7 +313,7 @@ export default function RewardsPage() {
             className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             <Plus size={13} />
-            Adicionar
+            Add
           </button>
         </div>
 
@@ -323,17 +323,17 @@ export default function RewardsPage() {
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
               className="rounded-md bg-muted/60 px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
-              title="Duração"
+              title="Duration"
             >
               {DURATIONS.map((d) => (
                 <option key={d.value} value={d.value}>
-                  Duração {d.label}
+                  Duration {d.label}
                 </option>
               ))}
             </select>
             <input
               type="number"
-              placeholder="Dias até expirar"
+              placeholder="Days until expiry"
               value={daysUntilExpiry}
               onChange={(e) => setDaysUntilExpiry(e.target.value)}
               min={1}
@@ -345,7 +345,7 @@ export default function RewardsPage() {
 
       {/* Active */}
       {active.length > 0 && (
-        <Section label="Ativas">
+        <Section label="Active">
           <ul className="flex flex-col">
             {active.map((r) => (
               <li
@@ -358,16 +358,16 @@ export default function RewardsPage() {
                     {r.title}
                   </div>
                   <div className="mt-0.5 text-[11px] text-muted-foreground">
-                    {durationLabel(r.reward_duration ?? "min15")} · Ativada{" "}
+                    {durationLabel(r.reward_duration ?? "min15")} · Activated{" "}
                     {formatDatePt(r.activatedAt)}
-                    {r.expiresAt && <> · Expira {formatDatePt(r.expiresAt)}</>}
+                    {r.expiresAt && <> · Expires {formatDatePt(r.expiresAt)}</>}
                   </div>
                 </div>
                 <span
                   className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider"
                   style={{ color: "#3478F6" }}
                 >
-                  ativa
+                  active
                 </span>
               </li>
             ))}
@@ -377,7 +377,7 @@ export default function RewardsPage() {
 
       {/* Unlocked */}
       {unlocked.length > 0 && (
-        <Section label="Desbloqueadas">
+        <Section label="Unlocked">
           <ul className="flex flex-col">
             {unlocked.map((r) => {
               const isEditing = editingId === r.id;
@@ -403,7 +403,7 @@ export default function RewardsPage() {
                       <div className="mt-0.5 text-[11px] text-muted-foreground">
                         {durationLabel(r.reward_duration ?? "min15")}
                         {r.expiresAt && (
-                          <> · Expira {formatDatePt(r.expiresAt)}</>
+                          <> · Expires {formatDatePt(r.expiresAt)}</>
                         )}
                       </div>
                     </div>
@@ -418,25 +418,25 @@ export default function RewardsPage() {
                         type="button"
                         onClick={() => handleActivate(r.id)}
                         className="inline-flex items-center gap-1 rounded-md bg-muted px-2.5 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent"
-                        title="Ativar recompensa"
+                        title="Activate reward"
                       >
                         <CheckCircle2 size={13} style={{ color: "#34C759" }} />
-                        Ativar
+                        Activate
                       </button>
                       <div className="flex items-center opacity-0 transition-opacity focus-within:opacity-100 group-hover/row:opacity-100">
                         <button
                           onClick={() =>
                             isEditing ? cancelEdit() : startEdit(r)
                           }
-                          aria-label={isEditing ? "Cancelar" : "Editar"}
-                          title={isEditing ? "Cancelar" : "Editar"}
+                          aria-label={isEditing ? "Cancel" : "Edit"}
+                          title={isEditing ? "Cancel" : "Edit"}
                           className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                         >
                           {isEditing ? <X size={13} /> : <Pencil size={13} />}
                         </button>
                         <button
                           onClick={() => handleDelete(r.id, r.title)}
-                          aria-label="Eliminar"
+                          aria-label="Delete"
                           className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                         >
                           <Trash2 size={13} />
@@ -468,7 +468,7 @@ export default function RewardsPage() {
 
       {/* Locked */}
       {locked.length > 0 && (
-        <Section label="Bloqueadas">
+        <Section label="Locked">
           <ul className="flex flex-col">
             {locked.map((r) => {
               const needed = r.point_cost - availablePoints;
@@ -499,7 +499,7 @@ export default function RewardsPage() {
                           {r.point_cost} pts
                         </span>
                         {r.expiresAt && (
-                          <span>· Expira {formatDatePt(r.expiresAt)}</span>
+                          <span>· Expires {formatDatePt(r.expiresAt)}</span>
                         )}
                       </div>
                       <div className="mt-1.5 flex items-center gap-2">
@@ -510,22 +510,22 @@ export default function RewardsPage() {
                           />
                         </div>
                         <span className="text-[11px] text-muted-foreground tabular-nums">
-                          faltam {needed}
+                          need {needed}
                         </span>
                       </div>
                     </div>
                     <div className="flex shrink-0 items-center opacity-0 transition-opacity focus-within:opacity-100 group-hover/row:opacity-100">
                       <button
                         onClick={() => (isEditing ? cancelEdit() : startEdit(r))}
-                        aria-label={isEditing ? "Cancelar" : "Editar"}
-                        title={isEditing ? "Cancelar" : "Editar"}
+                        aria-label={isEditing ? "Cancel" : "Edit"}
+                        title={isEditing ? "Cancel" : "Edit"}
                         className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                       >
                         {isEditing ? <X size={13} /> : <Pencil size={13} />}
                       </button>
                       <button
                         onClick={() => handleDelete(r.id, r.title)}
-                        aria-label="Eliminar"
+                        aria-label="Delete"
                         className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                       >
                         <Trash2 size={13} />
@@ -556,7 +556,7 @@ export default function RewardsPage() {
 
       {/* Expired */}
       {expired.length > 0 && (
-        <Section label="Expiradas">
+        <Section label="Expired">
           <ul className="flex flex-col opacity-60">
             {expired.map((r) => (
               <li
@@ -575,7 +575,7 @@ export default function RewardsPage() {
                 <span
                   className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-destructive"
                 >
-                  expirada
+                  expired
                 </span>
               </li>
             ))}
@@ -586,11 +586,11 @@ export default function RewardsPage() {
       {rewards.length === 0 && (
         <div className="rounded-2xl bg-card px-5 py-10 text-center shadow-card">
           <p className="text-sm font-medium text-foreground">
-            Sem recompensas ainda.
+            No rewards yet.
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Cria a tua primeira recompensa acima para começar a gamificar as
-            sessões de foco.
+            Create your first reward above to start gamifying your focus
+            sessions.
           </p>
         </div>
       )}
@@ -648,7 +648,7 @@ function RewardEditor({
     <div className="mb-2 ml-7 mr-1 rounded-lg bg-background p-3 shadow-card">
       <input
         type="text"
-        placeholder="Título"
+        placeholder="Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         className="w-full rounded-md bg-muted/60 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
@@ -679,7 +679,7 @@ function RewardEditor({
           type="date"
           value={expiresAt}
           onChange={(e) => setExpiresAt(e.target.value)}
-          title="Data de expiração"
+          title="Expiry date"
           className="rounded-md bg-muted/60 px-2 py-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
         />
       </div>
@@ -689,7 +689,7 @@ function RewardEditor({
           onClick={onCancel}
           className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
         >
-          <X size={12} /> Cancelar
+          <X size={12} /> Cancel
         </button>
         <button
           type="button"
@@ -697,7 +697,7 @@ function RewardEditor({
           disabled={saving}
           className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
         >
-          <Save size={12} /> Guardar
+          <Save size={12} /> Save
         </button>
       </div>
     </div>

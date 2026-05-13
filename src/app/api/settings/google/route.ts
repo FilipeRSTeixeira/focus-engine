@@ -47,13 +47,13 @@ export async function POST(request: Request) {
   };
 
   if (typeof clientId !== "string" || !clientId.trim()) {
-    return NextResponse.json({ error: "Client ID em falta" }, { status: 400 });
+    return NextResponse.json({ error: "Client ID is required" }, { status: 400 });
   }
   if (typeof clientSecret !== "string" || !clientSecret.trim()) {
-    return NextResponse.json({ error: "Client Secret em falta" }, { status: 400 });
+    return NextResponse.json({ error: "Client Secret is required" }, { status: 400 });
   }
   if (redirectUri !== undefined && typeof redirectUri !== "string") {
-    return NextResponse.json({ error: "Redirect URI inválido" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid redirect URI" }, { status: 400 });
   }
 
   // If credentials change, the old token is no longer valid — clear it.

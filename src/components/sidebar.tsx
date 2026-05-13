@@ -29,9 +29,9 @@ import { ThemeToggle } from "./theme-toggle";
  *
  * Structure (from top to bottom):
  *   1. MAIN     — Dashboard, Tasks, Focus
- *   2. PLANEAR  — Daily Review, History
- *   3. PROGRESSO — Rewards, Achievements
- *   4. PROJETOS — dynamic list of user projects (with colour dots)
+ *   2. PLAN    — Daily Review, History
+ *   3. PROGRESS — Rewards, Achievements
+ *   4. PROJECTS — dynamic list of user projects (with colour dots)
  *   5. Footer   — Google Calendar status, ThemeToggle, Points/Streak badge
  *
  * Each main nav item carries a "tone" that controls the icon colour, in the
@@ -58,23 +58,23 @@ const TONE_COLOR: Record<Tone, string> = {
 };
 
 const MAIN_NAV: NavItem[] = [
-  { href: "/", label: "Hoje", icon: LayoutDashboard, tone: "blue" },
-  { href: "/tasks", label: "Tarefas", icon: ListTodo, tone: "yellow" },
+  { href: "/", label: "Today", icon: LayoutDashboard, tone: "blue" },
+  { href: "/tasks", label: "Tasks", icon: ListTodo, tone: "yellow" },
   { href: "/focus", label: "Focus", icon: Timer, tone: "red" },
 ];
 
 const PLAN_NAV: NavItem[] = [
-  { href: "/daily-review", label: "Revisão Diária", icon: NotebookPen, tone: "green" },
-  { href: "/history", label: "Histórico", icon: CalendarDays, tone: "gray" },
+  { href: "/daily-review", label: "Daily Review", icon: NotebookPen, tone: "green" },
+  { href: "/history", label: "History", icon: CalendarDays, tone: "gray" },
 ];
 
 const PROGRESS_NAV: NavItem[] = [
-  { href: "/rewards", label: "Recompensas", icon: Gift, tone: "purple" },
-  { href: "/achievements", label: "Conquistas", icon: Award, tone: "orange" },
+  { href: "/rewards", label: "Rewards", icon: Gift, tone: "purple" },
+  { href: "/achievements", label: "Achievements", icon: Award, tone: "orange" },
 ];
 
 const APP_NAV: NavItem[] = [
-  { href: "/settings", label: "Definições", icon: Settings, tone: "gray" },
+  { href: "/settings", label: "Settings", icon: Settings, tone: "gray" },
 ];
 
 type Project = {
@@ -122,7 +122,7 @@ export function Sidebar() {
       <button
         onClick={() => setMobileOpen(true)}
         className="fixed left-3 top-3 z-40 flex h-10 w-10 items-center justify-center rounded-lg bg-card text-muted-foreground shadow-card transition-colors hover:text-foreground sm:hidden"
-        aria-label="Abrir navegação"
+        aria-label="Open navigation"
       >
         <Menu size={18} />
       </button>
@@ -146,7 +146,7 @@ export function Sidebar() {
           <button
             onClick={() => setMobileOpen(false)}
             className="flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            aria-label="Fechar navegação"
+            aria-label="Close navigation"
           >
             <X size={18} />
           </button>
@@ -162,7 +162,7 @@ export function Sidebar() {
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            aria-label={collapsed ? "Expandir sidebar" : "Recolher sidebar"}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           </button>
@@ -170,7 +170,7 @@ export function Sidebar() {
 
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto px-2 pb-3">
-          <NavGroup label="Hoje" collapsed={collapsed}>
+          <NavGroup label="Main" collapsed={collapsed}>
             {MAIN_NAV.map((item) => (
               <SidebarLink
                 key={item.href}
@@ -182,7 +182,7 @@ export function Sidebar() {
             ))}
           </NavGroup>
 
-          <NavGroup label="Planear" collapsed={collapsed}>
+          <NavGroup label="Plan" collapsed={collapsed}>
             {PLAN_NAV.map((item) => (
               <SidebarLink
                 key={item.href}
@@ -194,7 +194,7 @@ export function Sidebar() {
             ))}
           </NavGroup>
 
-          <NavGroup label="Progresso" collapsed={collapsed}>
+          <NavGroup label="Progress" collapsed={collapsed}>
             {PROGRESS_NAV.map((item) => (
               <SidebarLink
                 key={item.href}
@@ -206,7 +206,7 @@ export function Sidebar() {
             ))}
           </NavGroup>
 
-          <NavGroup label="Aplicação" collapsed={collapsed}>
+          <NavGroup label="App" collapsed={collapsed}>
             {APP_NAV.map((item) => (
               <SidebarLink
                 key={item.href}
@@ -218,9 +218,9 @@ export function Sidebar() {
             ))}
           </NavGroup>
 
-          {/* Projetos — dinâmica */}
+          {/* Projects — dynamic */}
           <NavGroup
-            label="Projetos"
+            label="Projects"
             collapsed={collapsed}
             action={
               !collapsed ? (
@@ -228,8 +228,8 @@ export function Sidebar() {
                   href="/projects"
                   onClick={handleNavClick}
                   className="rounded p-1 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                  aria-label="Gerir projetos"
-                  title="Gerir projetos"
+                  aria-label="Manage projects"
+                  title="Manage projects"
                 >
                   <Settings2 size={12} />
                 </Link>
@@ -244,7 +244,7 @@ export function Sidebar() {
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 >
                   <Inbox size={16} />
-                  <span>Criar primeiro projeto</span>
+                  <span>Create first project</span>
                 </Link>
               )
             ) : (
@@ -289,10 +289,10 @@ export function Sidebar() {
               className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
                 collapsed ? "justify-center" : ""
               }`}
-              title="Google Calendar ligado — gerir nas Definições"
+              title="Google Calendar connected — manage in Settings"
             >
               <Calendar size={14} style={{ color: TONE_COLOR.green }} />
-              {!collapsed && <span>Calendar ligado</span>}
+              {!collapsed && <span>Calendar connected</span>}
             </Link>
           ) : gcalConfigured ? (
             <a
@@ -300,10 +300,10 @@ export function Sidebar() {
               className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
                 collapsed ? "justify-center" : ""
               }`}
-              title="Ligar Google Calendar"
+              title="Connect Google Calendar"
             >
               <Calendar size={14} />
-              {!collapsed && <span>Ligar Calendar</span>}
+              {!collapsed && <span>Connect Calendar</span>}
             </a>
           ) : (
             <Link
@@ -312,10 +312,10 @@ export function Sidebar() {
               className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
                 collapsed ? "justify-center" : ""
               }`}
-              title="Configurar credenciais Google nas Definições"
+              title="Configure Google credentials in Settings"
             >
               <Calendar size={14} />
-              {!collapsed && <span>Configurar Calendar</span>}
+              {!collapsed && <span>Set up Calendar</span>}
             </Link>
           )}
 

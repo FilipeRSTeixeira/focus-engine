@@ -22,10 +22,10 @@ type TimerProfile = {
 };
 
 const TIPS = [
-  "Concentra-te numa coisa. Fecha as outras abas.",
-  "Só precisas de 2 minutos para começar.",
-  "Qual é o mais urgente do que tens para fazer?",
-  "Completar esta tarefa já é progresso.",
+  "Focus on one thing. Close the other tabs.",
+  "You only need 2 minutes to get started.",
+  "What is the most urgent thing on your list?",
+  "Completing this task is already progress.",
 ];
 
 function FocusContent() {
@@ -120,7 +120,7 @@ function FocusContent() {
         });
       }
     } catch {
-      setActiveSessionError("Falha ao carregar tarefa");
+      setActiveSessionError("Failed to load task");
     }
     setLoading(false);
   }
@@ -189,13 +189,13 @@ function FocusContent() {
           {activeSessionError}
         </h2>
         <p className="text-sm text-muted-foreground">
-          Completa ou termina a sessão atual antes de iniciar outra.
+          Complete or end the current session before starting another.
         </p>
         <button
           onClick={() => router.push("/tasks")}
           className="rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
         >
-          Voltar a Tarefas
+          Back to Tasks
         </button>
       </div>
     );
@@ -209,23 +209,23 @@ function FocusContent() {
             Focus
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Escolhe uma tarefa para focar.
+            Choose a task to focus on.
           </p>
         </header>
 
         {pendingTasks.length === 0 ? (
           <div className="rounded-2xl bg-card px-5 py-10 text-center shadow-card">
             <p className="text-sm font-medium text-foreground">
-              Sem tarefas pendentes.
+              No pending tasks.
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Cria uma tarefa primeiro para começares a focar.
+              Create a task first to start focusing.
             </p>
             <button
               onClick={() => router.push("/tasks")}
               className="mt-4 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
-              Ir para Tarefas
+              Go to Tasks
             </button>
           </div>
         ) : (
@@ -324,7 +324,7 @@ function FocusContent() {
           className="inline-flex items-center gap-2 rounded-full bg-muted px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <Monitor size={15} />
-          Modo Foco
+          Focus Mode
         </button>
 
         <button
@@ -340,7 +340,7 @@ function FocusContent() {
               : undefined
           }
         >
-          Perdi o foco
+          I lost focus
         </button>
       </div>
 
@@ -360,7 +360,7 @@ function FocusContent() {
             <div className="mb-3 flex items-center gap-2">
               <Zap size={16} style={{ color: "#FFC107" }} />
               <h3 className="text-base font-semibold tracking-tight sm:text-lg">
-                Perdeste o foco?
+                Lost focus?
               </h3>
             </div>
             <p className="mb-4 text-sm text-muted-foreground">{tip}</p>
@@ -371,7 +371,7 @@ function FocusContent() {
               }}
               className="w-full rounded-md bg-primary py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
-              Entendido
+              Got it
             </button>
           </div>
         </div>
@@ -394,7 +394,7 @@ function FocusContent() {
           >
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-base font-semibold tracking-tight sm:text-lg">
-                Sessão concluída
+                Session complete
               </h3>
               <button
                 onClick={() => {
@@ -404,23 +404,23 @@ function FocusContent() {
                   setFocusLost(false);
                 }}
                 className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-                aria-label="Fechar"
+                aria-label="Close"
               >
                 <X size={17} />
               </button>
             </div>
 
             <p className="mb-4 text-sm text-muted-foreground">
-              Sessão de {pendingSession?.duration} min concluída.
+              {pendingSession?.duration} min session complete.
             </p>
 
             <label className="mb-2 block text-xs font-medium text-muted-foreground">
-              Nota (opcional)
+              Note (optional)
             </label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Como correu?"
+              placeholder="How did it go?"
               rows={3}
               className="mb-4 w-full rounded-md bg-muted/60 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40"
             />
@@ -429,7 +429,7 @@ function FocusContent() {
               onClick={submitNote}
               className="w-full rounded-md bg-primary py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
-              Concluir
+              Done
             </button>
           </div>
         </div>
