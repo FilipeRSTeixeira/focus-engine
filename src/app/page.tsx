@@ -13,8 +13,12 @@ import {
   Star,
   Flame,
 } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Skeleton } from "@/components/skeleton";
 import { CircleCheckbox } from "@/components/circle-checkbox";
+import { AnimatedNumber } from "@/components/animated-number";
+import { listContainer, listRow, hud } from "@/lib/motion";
+import { playTink } from "@/lib/sound";
 
 /* -------------------------------------------------------------------------- */
 /*                                  Types                                     */
@@ -109,6 +113,7 @@ function formatDate(d: Date): string {
 /* -------------------------------------------------------------------------- */
 
 export default function DashboardPage() {
+  const reduced = useReducedMotion() ?? false;
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState<Set<number>>(new Set());
@@ -149,6 +154,7 @@ export default function DashboardPage() {
       });
       if (res.ok) {
         const result = await res.json();
+        playTink();
         if (result?.pointsEarned) {
           setRecentPoints(result.pointsEarned);
           setTimeout(() => setRecentPoints(null), 2500);
@@ -244,12 +250,18 @@ export default function DashboardPage() {
           aria-valuemin={0}
           aria-valuemax={100}
         >
-          <div
-            className="h-full rounded-full transition-[width] duration-500 ease-out"
-            style={{
+          <motion.div
+            className="h-full rounded-full"
+            initial={false}
+            animate={{
               width: `${Math.max(2, Math.round(level.progress * 100))}%`,
-              backgroundColor: level.color,
             }}
+            transition={
+              reduced
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 120, damping: 20, mass: 0.7 }
+            }
+            style={{ backgroundColor: level.color }}
           />
         </div>
       </section>
@@ -258,9 +270,10 @@ export default function DashboardPage() {
       <section className="mb-10 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
           <Star size={14} className="fill-current" style={{ color: "#FFC107" }} />
-          <span className="font-medium text-foreground tabular-nums">
-            {d.points}
-          </span>
+          <AnimatedNumber
+            value={d.points}
+            className="font-medium text-foreground"
+          />
           <span>points today</span>
         </span>
         <span className="text-border" aria-hidden>
@@ -272,18 +285,20 @@ export default function DashboardPage() {
             style={{ color: d.streak > 0 ? "#FFB020" : undefined }}
             className={d.streak === 0 ? "text-muted-foreground/50" : ""}
           />
-          <span className="font-medium text-foreground tabular-nums">
-            {d.streak}
-          </span>
+          <AnimatedNumber
+            value={d.streak}
+            className="font-medium text-foreground"
+          />
           <span>{d.streak === 1 ? "day streak" : "days streak"}</span>
         </span>
         <span className="text-border" aria-hidden>
           ·
         </span>
         <span>
-          <span className="font-medium text-foreground tabular-nums">
-            {d.pendingTasks}
-          </span>{" "}
+          <AnimatedNumber
+            value={d.pendingTasks}
+            className="font-medium text-foreground"
+          />{" "}
           {d.pendingTasks === 1 ? "pending task" : "pending tasks"}
         </span>
       </section>
@@ -305,48 +320,60 @@ export default function DashboardPage() {
         {topTasks.length === 0 ? (
           <EmptyToday />
         ) : (
-          <ul className="flex flex-col">
-            {topTasks.map((t) => (
-              <li
-                key={t.id}
-                className="group/row flex items-center gap-3 rounded-lg px-1 py-2 transition-colors hover:bg-muted/40"
-              >
-                <CircleCheckbox
-                  checked={false}
-                  onChange={() => handleComplete(t.id)}
-                  size={20}
-                  fillColor={t.project?.color}
-                  label={`Complete ${t.title}`}
-                  disabled={completing.has(t.id)}
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    {t.priority === "high" && (
+          <motion.ul
+            className="flex flex-col"
+            variants={listContainer(reduced)}
+            initial="hidden"
+            animate="show"
+          >
+            <AnimatePresence initial={false}>
+              {topTasks.map((t) => (
+                <motion.li
+                  key={t.id}
+                  layout={!reduced}
+                  variants={listRow(reduced)}
+                  initial="hidden"
+                  animate="show"
+                  exit="exit"
+                  className="group/row flex items-center gap-3 rounded-lg px-1 py-2 transition-colors hover:bg-muted/40"
+                >
+                  <CircleCheckbox
+                    checked={false}
+                    onChange={() => handleComplete(t.id)}
+                    size={20}
+                    fillColor={t.project?.color}
+                    label={`Complete ${t.title}`}
+                    disabled={completing.has(t.id)}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      {t.priority === "high" && (
+                        <span
+                          aria-hidden
+                          className="h-1.5 w-1.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: PRIORITY_DOT.high }}
+                          title="High priority"
+                        />
+                      )}
+                      <span className="truncate text-sm text-foreground">
+                        {t.title}
+                      </span>
+                    </div>
+                  </div>
+                  {t.project && (
+                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       <span
                         aria-hidden
-                        className="h-1.5 w-1.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: PRIORITY_DOT.high }}
-                        title="High priority"
+                        className="h-2 w-2 rounded-full"
+                        style={{ backgroundColor: t.project.color }}
                       />
-                    )}
-                    <span className="truncate text-sm text-foreground">
-                      {t.title}
+                      <span className="hidden sm:inline">{t.project.name}</span>
                     </span>
-                  </div>
-                </div>
-                {t.project && (
-                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span
-                      aria-hidden
-                      className="h-2 w-2 rounded-full"
-                      style={{ backgroundColor: t.project.color }}
-                    />
-                    <span className="hidden sm:inline">{t.project.name}</span>
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
+                  )}
+                </motion.li>
+              ))}
+            </AnimatePresence>
+          </motion.ul>
         )}
       </section>
 
@@ -482,21 +509,28 @@ export default function DashboardPage() {
       </section>
 
       {/* ---------------------- Points-earned toast ------------------- */}
-      {recentPoints !== null && (
-        <div
-          aria-live="polite"
-          className="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background shadow-popover animate-in fade-in slide-in-from-bottom-2"
-        >
-          <span className="inline-flex items-center gap-1.5">
-            <Star
-              size={14}
-              className="fill-current"
-              style={{ color: "#FFC107" }}
-            />
-            +{recentPoints} pts
-          </span>
-        </div>
-      )}
+      <AnimatePresence>
+        {recentPoints !== null && (
+          <motion.div
+            key="points-hud"
+            aria-live="polite"
+            variants={hud(reduced)}
+            initial="hidden"
+            animate="show"
+            exit="exit"
+            className="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full border border-border bg-foreground/95 px-4 py-2 text-sm font-medium text-background shadow-popover backdrop-blur-md"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <Star
+                size={14}
+                className="fill-current"
+                style={{ color: "#FFC107" }}
+              />
+              +{recentPoints} pts
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

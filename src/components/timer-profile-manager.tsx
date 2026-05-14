@@ -62,7 +62,7 @@ export function TimerProfileManager({
         await loadProfiles();
       }
     } catch {
-      setError("Failed to activate profile");
+      setError("Falha ao ativar perfil");
     }
   }
 
@@ -78,13 +78,13 @@ export function TimerProfileManager({
         setError(data.error);
       }
     } catch {
-      setError("Failed to delete profile");
+      setError("Falha ao eliminar perfil");
     }
   }
 
   async function handleSaveEdit(id: number) {
     if (!editName.trim()) {
-      setError("Name is required");
+      setError("Nome é obrigatório");
       return;
     }
     try {
@@ -105,13 +105,13 @@ export function TimerProfileManager({
         setError(data.error);
       }
     } catch {
-      setError("Failed to update profile");
+      setError("Falha ao atualizar perfil");
     }
   }
 
   async function handleCreate() {
     if (!newName.trim()) {
-      setError("Name is required");
+      setError("Nome é obrigatório");
       return;
     }
     try {
@@ -136,7 +136,7 @@ export function TimerProfileManager({
         setError(data.error);
       }
     } catch {
-      setError("Failed to create profile");
+      setError("Falha ao criar perfil");
     }
   }
 
@@ -160,11 +160,11 @@ export function TimerProfileManager({
       >
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold tracking-tight">
-            Timer Profiles
+            Perfis de Timer
           </h3>
           <button
             onClick={onClose}
-            aria-label="Close"
+            aria-label="Fechar"
             className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
           >
             <X size={17} />
@@ -242,17 +242,17 @@ export function TimerProfileManager({
                           className="rounded-full bg-background px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider"
                           style={{ color: "#3478F6" }}
                         >
-                          active
+                          ativo
                         </span>
                       )}
                       {p.isDefault && (
                         <span className="rounded-full bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                          default
+                          predefinido
                         </span>
                       )}
                     </div>
                     <span className="text-[11px] text-muted-foreground">
-                      {p.workMinutes} min focus · {p.breakMinutes} min break
+                      {p.workMinutes} min foco · {p.breakMinutes} min pausa
                     </span>
                   </div>
                   <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover/profile:opacity-100">
@@ -260,7 +260,7 @@ export function TimerProfileManager({
                       <button
                         onClick={() => handleActivate(p.id)}
                         className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-background hover:text-foreground"
-                        title="Activate"
+                        title="Ativar"
                       >
                         <Play size={13} />
                       </button>
@@ -278,7 +278,7 @@ export function TimerProfileManager({
                       <button
                         onClick={() => handleDelete(p.id)}
                         className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-30"
-                        title="Delete"
+                        title="Eliminar"
                         disabled={p.isActive}
                       >
                         <Trash2 size={13} />
@@ -310,7 +310,7 @@ export function TimerProfileManager({
                   className="w-16 rounded-md bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
                   min={1}
                 />
-                <span className="text-xs text-muted-foreground">focus</span>
+                <span className="text-xs text-muted-foreground">foco</span>
               </div>
               <span className="text-xs text-muted-foreground">/</span>
               <div className="flex items-center gap-1">
@@ -321,7 +321,7 @@ export function TimerProfileManager({
                   className="w-16 rounded-md bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40"
                   min={1}
                 />
-                <span className="text-xs text-muted-foreground">break</span>
+                <span className="text-xs text-muted-foreground">pausa</span>
               </div>
             </div>
             <div className="flex gap-2">
@@ -329,11 +329,29 @@ export function TimerProfileManager({
                 onClick={handleCreate}
                 className="flex-1 rounded-md bg-primary py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
               >
-                Create
+                Criar
               </button>
               <button
                 onClick={() => {
                   setCreating(false);
                   setNewName("");
                 }}
-                className="flex-1 rounded-md bg-background py-2 text-sm text
+                className="flex-1 rounded-md bg-background py-2 text-sm text-muted-foreground hover:text-foreground"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setCreating(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-muted py-2.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <Plus size={14} />
+            New profile
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}

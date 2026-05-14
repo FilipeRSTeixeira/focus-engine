@@ -9,6 +9,7 @@ import { TimerProfileSelector } from "@/components/timer-profile-selector";
 import { TimerProfileManager } from "@/components/timer-profile-manager";
 import { PRIORITY_COLORS } from "@/lib/colors";
 import { Skeleton } from "@/components/skeleton";
+import { playHuff } from "@/lib/sound";
 
 type SessionType = "work" | "break";
 
@@ -158,6 +159,7 @@ function FocusContent() {
   function toggleFocusLost() {
     setFocusLost((prev) => !prev);
     if (!focusLost) {
+      playHuff();
       setTip(TIPS[Math.floor(Math.random() * TIPS.length)]);
     } else {
       setTip(null);

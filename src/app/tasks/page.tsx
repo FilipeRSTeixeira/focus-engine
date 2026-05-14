@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { hud } from "@/lib/motion";
+import { playTink } from "@/lib/sound";
 import Link from "next/link";
 import {
   Trash2,
@@ -106,6 +109,7 @@ function formatDate(iso: string | null | undefined): string {
 /* -------------------------------------------------------------------------- */
 
 export default function TasksPage() {
+  const reduced = useReducedMotion() ?? false;
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [points, setPoints] = useState(0);
@@ -138,6 +142,20 @@ export default function TasksPage() {
   // Project filter — driven by ?projectId= in the URL (set by the sidebar).
   const searchParams = useSearchParams();
   const projectFilter = searchParams?.get("projectId") ?? "";
+  const newFlag = searchParams?.get("new") ?? "";
+
+  // Quick-add input ref — focused when the page is opened with ?new=1
+  // (e.g. from Cmd+N or the command palette).
+  const quickAddRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!newFlag) return;
+    const id = window.setTimeout(() => {
+      quickAddRef.current?.focus();
+      quickAddRef.current?.select?.();
+    }, 50);
+    return () => window.clearTimeout(id);
+  }, [newFlag]);
 
   // Inline editing
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -323,6 +341,7 @@ export default function TasksPage() {
       if (!res.ok) throw new Error(`Failed to complete (${res.status})`);
       const result = await res.json();
       if (result) {
+        playTink();
         setPointsEarned(result.pointsEarned);
         setLastBreakdown(result.breakdown ?? null);
         setNewlyUnlocked(result.newlyUnlocked ?? []);
@@ -385,6 +404,7 @@ export default function TasksPage() {
             <Plus size={12} className="text-muted-foreground" />
           </span>
           <input
+            ref={quickAddRef}
             type="text"
             placeholder="New task…"
             value={title}
@@ -910,21 +930,28 @@ export default function TasksPage() {
       )}
 
       {/* --------------------------- Toasts ------------------------------- */}
-      {pointsEarned !== null && (
-        <div
-          aria-live="polite"
-          className="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background shadow-popover"
-        >
-          <span className="inline-flex items-center gap-1.5">
-            <Star
-              size={14}
-              className="fill-current"
-              style={{ color: "#FFC107" }}
-            />
-            +{pointsEarned} pts
-          </span>
-        </div>
-      )}
+      <AnimatePresence>
+        {pointsEarned !== null && (
+          <motion.div
+            key="tasks-points-hud"
+            aria-live="polite"
+            variants={hud(reduced)}
+            initial="hidden"
+            animate="show"
+            exit="exit"
+            className="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full border border-border bg-foreground/95 px-4 py-2 text-sm font-medium text-background shadow-popover backdrop-blur-md"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <Star
+                size={14}
+                className="fill-current"
+                style={{ color: "#FFC107" }}
+              />
+              +{pointsEarned} pts
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {lastBreakdown && (
         <div className="fixed bottom-20 left-1/2 z-40 max-w-md -translate-x-1/2 rounded-xl bg-card px-4 py-3 text-xs shadow-popover">
