@@ -30,6 +30,29 @@ export async function PATCH(
       : body.expiresAt === null || body.expiresAt === ""
         ? null
         : new Date(body.expiresAt);
+
+  let weeklyLimit: number | null | undefined;
+  if (body.weeklyLimit !== undefined) {
+    if (body.weeklyLimit === null || body.weeklyLimit === "") {
+      weeklyLimit = null;
+    } else {
+      const n = Number(body.weeklyLimit);
+      if (!Number.isInteger(n) || n < 1) {
+        return NextResponse.json({ error: "weeklyLimit must be a positive integer or null" }, { status: 400 });
+      }
+      weeklyLimit = n;
+    }
+  }
+
+  let category: string | null | undefined;
+  if (body.category !== undefined) {
+    if (body.category === null || body.category === "") {
+      category = null;
+    } else if (typeof body.category === "string") {
+      category = body.category.trim();
+    }
+  }
+
   const updated = await updateReward(numId, {
     title: typeof body.title === "string" ? body.title : undefined,
     pointCost:
@@ -40,6 +63,8 @@ export async function PATCH(
     rewardDuration:
       typeof body.rewardDuration === "string" ? body.rewardDuration : undefined,
     expiresAt,
+    weeklyLimit,
+    category,
   });
   return NextResponse.json(updated);
 }

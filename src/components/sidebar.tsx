@@ -21,6 +21,7 @@ import {
   Settings2,
   Settings,
   Search,
+  Activity,
 } from "lucide-react";
 import { SidebarPointsBadge } from "./sidebar-points-badge";
 import { ThemeToggle } from "./theme-toggle";
@@ -62,6 +63,7 @@ const TONE_COLOR: Record<Tone, string> = {
 const MAIN_NAV: NavItem[] = [
   { href: "/", label: "Today", icon: LayoutDashboard, tone: "blue" },
   { href: "/tasks", label: "Tasks", icon: ListTodo, tone: "yellow" },
+  { href: "/habits", label: "Habits", icon: Activity, tone: "green" },
   { href: "/focus", label: "Focus", icon: Timer, tone: "red" },
 ];
 

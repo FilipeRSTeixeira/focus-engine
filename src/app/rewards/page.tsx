@@ -145,6 +145,8 @@ export default function RewardsPage() {
         not_available: "This reward is not available.",
         insufficient_points:
           "You don't have enough points to activate this reward.",
+        weekly_limit_reached:
+          "Weekly limit reached for this reward — try again next week.",
       };
       setMessage({ type: "error", text: msgs[result.error] || "Failed to activate." });
     } else {

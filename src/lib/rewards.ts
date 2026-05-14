@@ -1,5 +1,5 @@
 import { prisma } from "./prisma";
-import { startOfUtcDay, addDays } from "./date";
+import { startOfUtcDay, addDays, startOfIsoWeek, endOfIsoWeek } from "./date";
 
 export async function getRewards() {
   return await prisma.reward.findMany({ orderBy: { createdAt: "desc" } });
@@ -11,6 +11,8 @@ export async function createReward(data: {
   type?: string;
   rewardDuration?: string;
   expiresAt?: Date;
+  weeklyLimit?: number | null;
+  category?: string | null;
 }) {
   return await prisma.reward.create({
     data: {
@@ -19,6 +21,8 @@ export async function createReward(data: {
       type: data.type ?? "points",
       reward_duration: data.rewardDuration ?? "min15",
       expiresAt: data.expiresAt,
+      weekly_limit: data.weeklyLimit ?? null,
+      category: data.category ?? null,
     },
   });
 }
@@ -31,6 +35,8 @@ export async function updateReward(
     type?: string;
     rewardDuration?: string;
     expiresAt?: Date | null;
+    weeklyLimit?: number | null;
+    category?: string | null;
   }
 ) {
   const updateData: Record<string, unknown> = {};
@@ -39,6 +45,8 @@ export async function updateReward(
   if (data.type !== undefined) updateData.type = data.type;
   if (data.rewardDuration !== undefined) updateData.reward_duration = data.rewardDuration;
   if (data.expiresAt !== undefined) updateData.expiresAt = data.expiresAt;
+  if (data.weeklyLimit !== undefined) updateData.weekly_limit = data.weeklyLimit;
+  if (data.category !== undefined) updateData.category = data.category;
   return await prisma.reward.update({
     where: { id },
     data: updateData,
@@ -73,11 +81,6 @@ export async function getActiveCountToday() {
 }
 
 export async function activateReward(id: number) {
-  // Run all reads + writes in a single transaction so the activation check
-  // (active count, current status, available points) and the subsequent
-  // mutations are consistent — without this, on platforms with looser SQLite
-  // snapshot semantics the just-created reward can be missed by findUnique
-  // and we wrongly return { error: "not_available" }.
   return await prisma.$transaction(async (tx) => {
     const today = startOfUtcDay();
 
@@ -94,6 +97,27 @@ export async function activateReward(id: number) {
     const reward = await tx.reward.findUnique({ where: { id } });
     if (!reward || reward.status !== "available") {
       return { error: "not_available" as const };
+    }
+
+    // Per-reward weekly_limit enforcement. If set (e.g. 1), the same reward
+    // (matched by id OR by shared category like "cheat_meal") cannot be
+    // activated more than `weekly_limit` times in the current ISO week.
+    if (reward.weekly_limit && reward.weekly_limit > 0) {
+      const weekStart = startOfIsoWeek(today);
+      const weekEnd = endOfIsoWeek(today);
+      const usedThisWeek = await tx.reward.count({
+        where: {
+          OR: [
+            { id: reward.id },
+            ...(reward.category ? [{ category: reward.category }] : []),
+          ],
+          status: { in: ["active", "expired"] },
+          activatedAt: { gte: weekStart, lte: weekEnd },
+        },
+      });
+      if (usedThisWeek >= reward.weekly_limit) {
+        return { error: "weekly_limit_reached" as const };
+      }
     }
 
     const todaySummary = await tx.dailySummary.findUnique({ where: { date: today } });
@@ -126,7 +150,6 @@ export async function activateReward(id: number) {
 
 export async function expireRewards() {
   const now = new Date();
-  // Small buffer to handle microsecond timing differences
   const cutoff = new Date(now.getTime() - 100);
   const expired = await prisma.reward.updateMany({
     where: {

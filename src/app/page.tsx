@@ -12,6 +12,8 @@ import {
   Sparkles,
   Star,
   Flame,
+  Activity,
+  CheckCircle2,
 } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Skeleton } from "@/components/skeleton";
@@ -52,6 +54,13 @@ type PendingTask = {
   project: { id: number; name: string; color: string } | null;
 };
 
+type HabitsWeek = {
+  totalHabits: number;
+  dailyHitsToday: number;
+  averagePercent: number;
+  pointsThisWeek: number;
+};
+
 type DashboardData = {
   points: number;
   streak: number;
@@ -70,6 +79,7 @@ type DashboardData = {
   topPendingTasks: PendingTask[];
   level: LevelInfo;
   recentAchievements: Achievement[];
+  habitsWeek: HabitsWeek | null;
 };
 
 const DEFAULT_LEVEL: LevelInfo = {
@@ -89,10 +99,6 @@ const PRIORITY_DOT: Record<string, string> = {
   low: "#8E8E93",
 };
 
-/* -------------------------------------------------------------------------- */
-/*                                Utilities                                   */
-/* -------------------------------------------------------------------------- */
-
 function greeting(hour: number): string {
   if (hour < 5) return "Good night";
   if (hour < 12) return "Good morning";
@@ -107,10 +113,6 @@ function formatDate(d: Date): string {
     month: "long",
   });
 }
-
-/* -------------------------------------------------------------------------- */
-/*                                 Page                                       */
-/* -------------------------------------------------------------------------- */
 
 export default function DashboardPage() {
   const reduced = useReducedMotion() ?? false;
@@ -135,6 +137,7 @@ export default function DashboardPage() {
         topPendingTasks: [],
         level: DEFAULT_LEVEL,
         recentAchievements: [],
+        habitsWeek: null,
       });
     } finally {
       setLoading(false);
@@ -159,7 +162,6 @@ export default function DashboardPage() {
           setRecentPoints(result.pointsEarned);
           setTimeout(() => setRecentPoints(null), 2500);
         }
-        // Optimistic: remove the task locally, then refresh in background.
         setData((d) =>
           d
             ? {
@@ -171,7 +173,6 @@ export default function DashboardPage() {
               }
             : d
         );
-        // Re-fetch to refresh points/streak/level.
         load();
       }
     } catch {
@@ -184,8 +185,6 @@ export default function DashboardPage() {
       });
     }
   }
-
-  /* ---------------------------- Loading state ----------------------------- */
 
   if (loading) {
     return (
@@ -215,7 +214,6 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-6 pt-20 pb-16 sm:px-10 sm:pt-14">
-      {/* ----------------------- Greeting + date ----------------------- */}
       <header className="mb-10">
         <h1 className="text-[28px] font-semibold leading-tight tracking-tight sm:text-[32px]">
           {greeting(now.getHours())}
@@ -225,7 +223,6 @@ export default function DashboardPage() {
         </p>
       </header>
 
-      {/* ------------------------- Level / XP -------------------------- */}
       <section aria-label="Level progress" className="mb-6">
         <div className="mb-2 flex items-baseline justify-between gap-3">
           <div className="flex items-baseline gap-2">
@@ -266,44 +263,29 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* ------------------------- Stats strip ------------------------- */}
       <section className="mb-10 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
           <Star size={14} className="fill-current" style={{ color: "#FFC107" }} />
-          <AnimatedNumber
-            value={d.points}
-            className="font-medium text-foreground"
-          />
+          <AnimatedNumber value={d.points} className="font-medium text-foreground" />
           <span>points today</span>
         </span>
-        <span className="text-border" aria-hidden>
-          ·
-        </span>
+        <span className="text-border" aria-hidden>·</span>
         <span className="inline-flex items-center gap-1.5">
           <Flame
             size={14}
             style={{ color: d.streak > 0 ? "#FFB020" : undefined }}
             className={d.streak === 0 ? "text-muted-foreground/50" : ""}
           />
-          <AnimatedNumber
-            value={d.streak}
-            className="font-medium text-foreground"
-          />
+          <AnimatedNumber value={d.streak} className="font-medium text-foreground" />
           <span>{d.streak === 1 ? "day streak" : "days streak"}</span>
         </span>
-        <span className="text-border" aria-hidden>
-          ·
-        </span>
+        <span className="text-border" aria-hidden>·</span>
         <span>
-          <AnimatedNumber
-            value={d.pendingTasks}
-            className="font-medium text-foreground"
-          />{" "}
+          <AnimatedNumber value={d.pendingTasks} className="font-medium text-foreground" />{" "}
           {d.pendingTasks === 1 ? "pending task" : "pending tasks"}
         </span>
       </section>
 
-      {/* ------------------------ Today (tasks) ------------------------- */}
       <section className="mb-10" aria-label="Tasks for today">
         <div className="mb-2 flex items-center justify-between px-1">
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
@@ -355,9 +337,7 @@ export default function DashboardPage() {
                           title="High priority"
                         />
                       )}
-                      <span className="truncate text-sm text-foreground">
-                        {t.title}
-                      </span>
+                      <span className="truncate text-sm text-foreground">{t.title}</span>
                     </div>
                   </div>
                   {t.project && (
@@ -377,7 +357,57 @@ export default function DashboardPage() {
         )}
       </section>
 
-      {/* --------------------- Recent achievements --------------------- */}
+      {d.habitsWeek && d.habitsWeek.totalHabits > 0 && (
+        <section className="mb-10" aria-label="Habits this week">
+          <div className="mb-2 flex items-center justify-between px-1">
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+              Habits
+            </h2>
+            <Link
+              href="/habits"
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              View all <ArrowRight size={11} />
+            </Link>
+          </div>
+          <Link
+            href="/habits"
+            className="flex items-center gap-3 rounded-xl bg-card px-4 py-3 shadow-card transition-colors hover:bg-muted/40"
+          >
+            <span
+              aria-hidden
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-success/10"
+            >
+              <Activity size={18} style={{ color: "#34C759" }} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline gap-2">
+                <span className="text-sm font-medium text-foreground tabular-nums">
+                  {d.habitsWeek.dailyHitsToday} / {d.habitsWeek.totalHabits}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  daily targets met today
+                </span>
+              </div>
+              <div className="mt-1.5 flex items-center gap-2">
+                <div className="h-1 flex-1 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-primary transition-[width] duration-500"
+                    style={{ width: `${d.habitsWeek.averagePercent}%` }}
+                  />
+                </div>
+                <span className="text-[11px] text-muted-foreground tabular-nums">
+                  {d.habitsWeek.averagePercent}% week avg
+                </span>
+              </div>
+            </div>
+            <span className="text-xs font-medium tabular-nums" style={{ color: "#FFC107" }}>
+              +{d.habitsWeek.pointsThisWeek}
+            </span>
+          </Link>
+        </section>
+      )}
+
       {recentAchievements.length > 0 && (
         <section className="mb-10" aria-label="Recent achievements">
           <div className="mb-2 flex items-center justify-between px-1">
@@ -407,7 +437,6 @@ export default function DashboardPage() {
         </section>
       )}
 
-      {/* ----------------------- Yesterday recap ----------------------- */}
       {d.yesterdayTasks.length > 0 && (
         <section className="mb-10" aria-label="Yesterday recap">
           <h2 className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
@@ -446,7 +475,6 @@ export default function DashboardPage() {
         </section>
       )}
 
-      {/* -------------------- Unlocked rewards ------------------------- */}
       {d.unlockedRewards.length > 0 && (
         <section className="mb-10" aria-label="Unlocked rewards">
           <div className="mb-2 flex items-center justify-between px-1">
@@ -480,7 +508,6 @@ export default function DashboardPage() {
         </section>
       )}
 
-      {/* ------------------------ Quick actions ------------------------ */}
       <section
         aria-label="Quick actions"
         className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-border pt-6 text-sm"
@@ -508,7 +535,6 @@ export default function DashboardPage() {
         </Link>
       </section>
 
-      {/* ---------------------- Points-earned toast ------------------- */}
       <AnimatePresence>
         {recentPoints !== null && (
           <motion.div
@@ -521,11 +547,7 @@ export default function DashboardPage() {
             className="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full border border-border bg-foreground/95 px-4 py-2 text-sm font-medium text-background shadow-popover backdrop-blur-md"
           >
             <span className="inline-flex items-center gap-1.5">
-              <Star
-                size={14}
-                className="fill-current"
-                style={{ color: "#FFC107" }}
-              />
+              <Star size={14} className="fill-current" style={{ color: "#FFC107" }} />
               +{recentPoints} pts
             </span>
           </motion.div>
@@ -535,25 +557,16 @@ export default function DashboardPage() {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*                              Empty state                                   */
-/* -------------------------------------------------------------------------- */
-
 function EmptyToday() {
   return (
     <div className="rounded-xl bg-card px-5 py-8 text-center shadow-card">
       <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-muted">
         <Sparkles size={18} style={{ color: "#FFC107" }} />
       </div>
-      <p className="text-sm font-medium text-foreground">
-        All done for today.
-      </p>
+      <p className="text-sm font-medium text-foreground">All done for today.</p>
       <p className="mt-1 text-xs text-muted-foreground">
         Add a new task or take a break.{" "}
-        <Link
-          href="/tasks"
-          className="text-foreground underline-offset-4 hover:underline"
-        >
+        <Link href="/tasks" className="text-foreground underline-offset-4 hover:underline">
           Go to Tasks
         </Link>
       </p>
