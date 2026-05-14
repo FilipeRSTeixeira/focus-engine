@@ -20,9 +20,12 @@ import {
   Inbox,
   Settings2,
   Settings,
+  Search,
+  Activity,
 } from "lucide-react";
 import { SidebarPointsBadge } from "./sidebar-points-badge";
 import { ThemeToggle } from "./theme-toggle";
+import { useCommandPalette } from "./command-palette";
 
 /**
  * Things-inspired sidebar
@@ -60,6 +63,7 @@ const TONE_COLOR: Record<Tone, string> = {
 const MAIN_NAV: NavItem[] = [
   { href: "/", label: "Today", icon: LayoutDashboard, tone: "blue" },
   { href: "/tasks", label: "Tasks", icon: ListTodo, tone: "yellow" },
+  { href: "/habits", label: "Habits", icon: Activity, tone: "green" },
   { href: "/focus", label: "Focus", icon: Timer, tone: "red" },
 ];
 
@@ -87,6 +91,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeProjectId = searchParams?.get("projectId");
+  const { setOpen: setPaletteOpen } = useCommandPalette();
 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -136,7 +141,7 @@ export function Sidebar() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-60 flex-col bg-sidebar text-sidebar-foreground transition-[transform,width] duration-200 sm:relative sm:inset-auto sm:z-auto sm:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-60 flex-col border-r border-sidebar-border bg-sidebar/85 text-sidebar-foreground backdrop-blur-xl transition-[transform,width] duration-200 supports-[backdrop-filter]:bg-sidebar/70 sm:relative sm:inset-auto sm:z-auto sm:translate-x-0 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"
         } ${collapsed ? "sm:w-16" : "sm:w-60"}`}
       >
@@ -165,6 +170,37 @@ export function Sidebar() {
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          </button>
+        </div>
+
+        {/* Quick search trigger — opens the command palette */}
+        <div className="px-2 pb-2 pt-1">
+          <button
+            type="button"
+            onClick={() => {
+              setMobileOpen(false);
+              setPaletteOpen(true);
+            }}
+            className={`group/qs flex w-full items-center gap-2 rounded-lg border border-sidebar-border bg-background/60 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-sidebar-accent hover:text-foreground ${
+              collapsed ? "justify-center" : ""
+            }`}
+            aria-label="Open command palette"
+            title="Open command palette (Cmd+K)"
+          >
+            <Search size={13} className="shrink-0" />
+            {!collapsed && (
+              <>
+                <span className="flex-1 text-left">Quick search…</span>
+                <span className="flex items-center gap-0.5">
+                  <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-sidebar-border bg-sidebar px-1 font-sans text-[10px] font-medium">
+                    ⌘
+                  </kbd>
+                  <kbd className="inline-flex h-4 min-w-[16px] items-center justify-center rounded border border-sidebar-border bg-sidebar px-1 font-sans text-[10px] font-medium">
+                    K
+                  </kbd>
+                </span>
+              </>
+            )}
           </button>
         </div>
 

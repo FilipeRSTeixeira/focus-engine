@@ -6,9 +6,9 @@ import {
 } from "@/lib/dashboard";
 import { getTasks } from "@/lib/tasks";
 import { getCurrentLevelInfo } from "@/lib/levels";
+import { getHabitsWeekSummary } from "@/lib/habits";
 import { prisma } from "@/lib/prisma";
 
-/** Priority sort order — highest priority first. */
 const PRIORITY_ORDER: Record<string, number> = {
   high: 0,
   medium: 1,
@@ -24,6 +24,7 @@ export async function GET() {
       pendingTasks,
       level,
       recentAchievements,
+      habitsWeek,
     ] = await Promise.all([
       getTodayPointsAndStreak(),
       getYesterdayCompletedTasks(),
@@ -31,10 +32,9 @@ export async function GET() {
       getTasks({ status: "pending" }),
       getCurrentLevelInfo(),
       prisma.achievement.findMany({ orderBy: { unlockedAt: "desc" }, take: 3 }),
+      getHabitsWeekSummary(),
     ]);
 
-    // Sort pending tasks: priority (high → low) → due date (soonest first,
-    // nulls last) → createdAt (oldest first, so older items aren't buried).
     const sorted = [...pendingTasks].sort((a, b) => {
       const pa = PRIORITY_ORDER[a.priority] ?? 99;
       const pb = PRIORITY_ORDER[b.priority] ?? 99;
@@ -70,6 +70,7 @@ export async function GET() {
       topPendingTasks,
       level,
       recentAchievements,
+      habitsWeek,
     });
   } catch (error) {
     console.error("Dashboard API error:", error);
@@ -92,6 +93,7 @@ export async function GET() {
         progress: 0,
       },
       recentAchievements: [],
+      habitsWeek: null,
     });
   }
 }

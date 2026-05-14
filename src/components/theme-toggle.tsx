@@ -4,9 +4,9 @@ import { Sun, Moon, Monitor } from "lucide-react";
 import { useTheme, type ThemePreference } from "./theme-provider";
 
 const LABELS: Record<ThemePreference, string> = {
-  light: "Tema claro",
-  dark: "Tema escuro",
-  system: "Tema do sistema",
+  light: "Light theme",
+  dark: "Dark theme",
+  system: "System theme",
 };
 
 export function ThemeToggle({
@@ -32,7 +32,7 @@ export function ThemeToggle({
     <button
       type="button"
       onClick={cyclePreference}
-      title={`${LABELS[preference]} — clica para ${LABELS[next].toLowerCase()}`}
+      title={`${LABELS[preference]} — click for ${LABELS[next].toLowerCase()}`}
       aria-label={LABELS[preference]}
       className={`flex items-center gap-2 rounded-md px-2 py-2 text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
         collapsed ? "justify-center w-full" : "w-full"

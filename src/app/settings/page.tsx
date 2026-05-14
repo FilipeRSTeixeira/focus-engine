@@ -13,7 +13,16 @@ import {
   KeyRound,
   Trash2,
   AlertTriangle,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
+import {
+  getSoundEnabled,
+  getSoundVolume,
+  setSoundEnabled,
+  setSoundVolume,
+  playTink,
+} from "@/lib/sound";
 
 const DEFAULT_REDIRECT_URI = "http://localhost:3210/api/auth/google/callback";
 
@@ -79,14 +88,34 @@ function SettingsContent() {
   const [showHelp, setShowHelp] = useState(false);
   const [promptCopied, setPromptCopied] = useState(false);
 
+  // Sound & feedback preferences (persisted to localStorage by @/lib/sound).
+  const [soundOn, setSoundOn] = useState(true);
+  const [volume, setVolume] = useState(0.6);
+
   useEffect(() => {
     void loadSettings();
-    // Handle gcal=connected flash from callback redirect
     if (searchParams?.get("gcal") === "connected") {
       setSavedFlash(true);
       window.setTimeout(() => setSavedFlash(false), 3000);
     }
+    setSoundOn(getSoundEnabled());
+    setVolume(getSoundVolume());
   }, [searchParams]);
+
+  function handleToggleSound(next: boolean) {
+    setSoundOn(next);
+    setSoundEnabled(next);
+    if (next) playTink();
+  }
+
+  function handleVolumeChange(next: number) {
+    setVolume(next);
+    setSoundVolume(next);
+  }
+
+  function previewSound() {
+    playTink();
+  }
 
   async function loadSettings() {
     try {
@@ -317,6 +346,76 @@ function SettingsContent() {
             )}
           </div>
         </form>
+      </section>
+
+      {/* Sound & feedback section */}
+      <section className="mb-6 rounded-2xl bg-card p-5 shadow-card">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <h2 className="flex items-center gap-2 text-base font-semibold">
+              {soundOn ? (
+                <Volume2 size={18} style={{ color: "#34C759" }} />
+              ) : (
+                <VolumeX size={18} className="text-muted-foreground" />
+              )}
+              Sound &amp; feedback
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Subtle cues on task completion, focus transitions, and reward
+              activation. Vibration is used on supporting devices.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <label className="flex items-center justify-between gap-3 rounded-lg bg-muted/40 px-3 py-2.5 text-sm">
+            <span>Play sounds</span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={soundOn}
+              onClick={() => handleToggleSound(!soundOn)}
+              className={`relative h-6 w-10 rounded-full transition-colors ${
+                soundOn ? "bg-primary" : "bg-muted"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 h-5 w-5 rounded-full bg-background shadow transition-transform ${
+                  soundOn ? "translate-x-4" : "translate-x-0.5"
+                }`}
+              />
+            </button>
+          </label>
+
+          <div className="rounded-lg bg-muted/40 px-3 py-2.5">
+            <div className="mb-2 flex items-center justify-between text-sm">
+              <span>Volume</span>
+              <span className="text-xs tabular-nums text-muted-foreground">
+                {Math.round(volume * 100)}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={volume}
+              disabled={!soundOn}
+              onChange={(e) => handleVolumeChange(Number(e.target.value))}
+              className="w-full accent-primary disabled:opacity-50"
+              aria-label="Sound volume"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={previewSound}
+            disabled={!soundOn}
+            className="self-start rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium transition-colors hover:bg-muted disabled:opacity-50"
+          >
+            Play sample
+          </button>
+        </div>
       </section>
 
       {/* Help section */}

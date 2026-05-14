@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import dynamic from "next/dynamic";
@@ -19,6 +19,24 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Focus Engine",
   description: "A gamified focus and productivity tracker.",
+};
+
+/**
+ * Viewport — critical for iOS / iPadOS Safari.
+ *
+ * `viewportFit: "cover"` lets us use safe-area-inset utilities.
+ * We deliberately omit `maximumScale` / `userScalable: false` so users
+ * can still pinch-zoom for accessibility. Inputs use `font-size >= 16px`
+ * to avoid the iOS auto-zoom-on-focus behaviour.
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FAFAF7" },
+    { media: "(prefers-color-scheme: dark)", color: "#1A1A1C" },
+  ],
 };
 
 const AppLayout = dynamic(() => import("./layout-client"));

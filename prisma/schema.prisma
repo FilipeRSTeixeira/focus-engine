@@ -50,6 +50,8 @@ model Reward {
   expiresAt       DateTime?
   createdAt       DateTime  @default(now())
   activatedAt     DateTime?
+  weekly_limit    Int?
+  category        String?
 }
 
 model Task {
@@ -94,4 +96,36 @@ model Setting {
   key       String   @id
   value     String
   updatedAt DateTime @updatedAt
+}
+
+model Habit {
+  id                  Int        @id @default(autoincrement())
+  name                String
+  description         String?
+  icon                String     @default("sparkles")
+  color               String     @default("#10b981")
+  category            String?
+  unit                String     @default("count")
+  cadence             String     @default("daily")
+  daily_target        Float?
+  weekly_days_target  Int        @default(7)
+  weekly_target       Float?
+  daily_points        Int        @default(2)
+  weekly_bonus_points Int        @default(0)
+  active              Boolean    @default(true)
+  order               Int        @default(0)
+  createdAt           DateTime   @default(now())
+  logs                HabitLog[]
+}
+
+model HabitLog {
+  id        Int      @id @default(autoincrement())
+  habitId   Int
+  date      DateTime
+  value     Float    @default(1)
+  note      String?
+  createdAt DateTime @default(now())
+  Habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, date])
 }

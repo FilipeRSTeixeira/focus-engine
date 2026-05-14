@@ -9,10 +9,6 @@ import {
 } from "./rewards";
 
 async function resetDb() {
-  // Delete in foreign-key-dependency order so SQLite's ON DELETE RESTRICT
-  // never trips. Using Prisma's typed deleteMany avoids subtle issues we hit
-  // earlier with raw "PRAGMA foreign_keys = OFF" not propagating across the
-  // pool's connections.
   await prisma.dailySummary.deleteMany();
   await prisma.achievement.deleteMany();
   await prisma.focusSession.deleteMany();
@@ -30,8 +26,6 @@ describe("rewards", () => {
   });
 
   async function seedPoints(amount: number) {
-    // UTC midnight — production rewards code reads DailySummary keyed by
-    // startOfUtcDay(), so seeded local-midnight rows wouldn't be found.
     const now = new Date();
     const today = new Date(
       Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0)
@@ -115,5 +109,38 @@ describe("rewards", () => {
 
     const result = await activateReward(r.id);
     expect(result).toHaveProperty("error", "not_available");
+  });
+
+  it("weekly_limit blocks a second activation in the same week via shared category", async () => {
+    await seedPoints(100);
+    const a = await createReward({
+      title: "Cheat A",
+      pointCost: 5,
+      category: "cheat_meal",
+      weeklyLimit: 1,
+    });
+    const b = await createReward({
+      title: "Cheat B",
+      pointCost: 5,
+      category: "cheat_meal",
+      weeklyLimit: 1,
+    });
+
+    const r1 = await activateReward(a.id);
+    expect(r1).not.toHaveProperty("error");
+
+    const r2 = await activateReward(b.id);
+    expect(r2).toHaveProperty("error", "weekly_limit_reached");
+  });
+
+  it("weekly_limit allows activation when no prior use this week", async () => {
+    await seedPoints(50);
+    const r = await createReward({
+      title: "Once-weekly reward",
+      pointCost: 5,
+      weeklyLimit: 1,
+    });
+    const result = await activateReward(r.id);
+    expect(result).not.toHaveProperty("error");
   });
 });
