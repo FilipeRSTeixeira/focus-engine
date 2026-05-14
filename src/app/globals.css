@@ -199,12 +199,64 @@
     @apply border-border outline-ring/40;
   }
 
+  /* Apple-style focus rings — visible only for keyboard users. */
+  *:focus {
+    outline: none;
+  }
+  *:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: inherit;
+  }
+
   html {
     @apply font-sans antialiased;
     color-scheme: light;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+
+    /* iOS / iPadOS Safari:
+       - kill the grey flash on tap
+       - prevent text resizing when device rotates
+       - allow touch events to register without the 300ms delay */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Make every interactive element tap-friendly on touch devices.
+     Tailwind v4 no longer sets `cursor: pointer` on buttons by default,
+     which on iOS Safari can cause click events to be swallowed on
+     elements that aren't recognised as natively interactive. Setting
+     `cursor: pointer` here ensures iOS dispatches the click event,
+     and `touch-action: manipulation` removes the legacy 300ms delay
+     and prevents accidental double-tap-to-zoom on controls. */
+  button,
+  a,
+  [role="button"],
+  [role="link"],
+  [role="menuitem"],
+  [role="option"],
+  label[for],
+  summary,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    touch-action: manipulation;
+    cursor: pointer;
+  }
+
+  /* Ensure form controls don't trigger iOS auto-zoom on focus.
+     iOS Safari zooms in on focus if the input font-size is below 16px. */
+  @supports (-webkit-touch-callout: none) {
+    input,
+    textarea,
+    select {
+      font-size: 16px;
+    }
   }
 
   html.dark {
@@ -258,4 +310,27 @@
   .surface-hover {
     @apply transition-colors hover:bg-accent/60;
   }
+
+  /* Tabular numerals everywhere we render counters/stats. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
 }
+
+/* ---------------------------------------------------------------------------
+   Reduced motion — collapse all CSS-driven animations and transitions to
+   essentially nothing. Framer-motion already honours `useReducedMotion`
+   independently; this is the safety net for everything else.
+--------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
